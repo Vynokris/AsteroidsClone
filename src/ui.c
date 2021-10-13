@@ -151,20 +151,11 @@ void game_over_screen(Game* game)
         char line_i[64];
         fgets(line_i, 64, f);
 
-        if (highscores[i][0] > 0) {
-            DrawText(TextFormat("#%d: %d %ds", i+1, highscores[i][0], highscores[i][1]),
-                    GetScreenWidth() / 2 - MeasureText(TextFormat("#%d: %d %ds", i+1, highscores[i][0], highscores[i][1]), ui->highscore_size) / 2,
-                    GetScreenHeight() / 2 - ui->game_over_size + ui->info_size * 4 + (ui->highscore_size + 5) * (i+1),
-                    ui->highscore_size,
-                    GRAY);
-        }
-        else {
-            DrawText(TextFormat("#%d: -", i+1),
-                    GetScreenWidth() / 2 - MeasureText(TextFormat("#%d: -", i+1), ui->highscore_size) / 2,
-                    GetScreenHeight() / 2 - ui->game_over_size + ui->info_size * 4 + (ui->highscore_size + 5) * (i+1),
-                    ui->highscore_size,
-                    GRAY);
-        }
+        DrawText(TextFormat((highscores[i][0] > 0 ? "#%d: %d %ds" : "#%d: -"), i+1, highscores[i][0], highscores[i][1]),
+                GetScreenWidth() / 2 - MeasureText(TextFormat((highscores[i][0] > 0 ? "#%d: %d %ds" : "#%d: -"), i+1, highscores[i][0], highscores[i][1]), ui->highscore_size) / 2,
+                GetScreenHeight() / 2 - ui->game_over_size + ui->info_size * 4 + (ui->highscore_size + 5) * (i+1),
+                ui->highscore_size,
+                (highscores[i][0] == game->score ? WHITE: GRAY));
     }
 
     // Draw the restart promt.

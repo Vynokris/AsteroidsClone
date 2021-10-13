@@ -13,6 +13,7 @@
 
 typedef struct Game {
     bool game_over_trigger;
+    bool show_debug_keys;
     int score;
     int multiplier;
     int asteroid_spawn_speed;
@@ -35,6 +36,9 @@ void game_init(Game* game);
 
 // Update all the game objects.
 void game_update(Game* game);
+
+// Listen to the debug keys.
+void debug_keys(Game* game);
 
 // Render all the game sprites.
 void game_render(Game* game);

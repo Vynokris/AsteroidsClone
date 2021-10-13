@@ -30,11 +30,9 @@ int main(void)
 
     while (!WindowShouldClose())
     {
-        if (IsKeyPressed('P')) {
-            game.player.hp = 0;
-        }
-
         game_update(&game);
+
+        debug_keys(&game);
 
         BeginDrawing();
         {
