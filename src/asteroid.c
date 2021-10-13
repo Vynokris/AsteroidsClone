@@ -1,0 +1,191 @@
+#include "asteroid.h"
+
+
+
+void asteroid_init(Asteroid* asteroids)
+{
+    for (int i = 0; i < ASTEROID_MAX_AMOUNT; i++) 
+    {
+        // Position.
+        asteroids[i].pos.x = 0;
+        asteroids[i].pos.y = 0;
+        // Velocity.
+        asteroids[i].velocity.x = 0;
+        asteroids[i].velocity.y = 0;
+        // Rotation.
+        asteroids[i].rotation = 0.0f;
+        asteroids[i].rotation_speed = 0.0f;
+        // Type.
+        asteroids[i].type = A_DESTROYED;
+        // Size.
+        asteroids[i].size = 0;
+        // Side count.
+        asteroids[i].sides = 0;
+    }
+}
+
+
+void spawn_asteroid(Asteroid* asteroids)
+{
+    // ----- FIND ASTEROID ----- //
+    int a_spwn = 0;
+    for (int i = 0; i < ASTEROID_MAX_AMOUNT; i++) {
+        if (asteroids[i].type == A_SMALL && a_spwn == 0) {
+            a_spwn = i;
+        }
+        if (asteroids[i].type == A_DESTROYED) {
+            a_spwn = i;
+            break;
+        }
+    }
+
+    // ----- TYPE ----- //
+    asteroids[a_spwn].type = GetRandomValue(2, 3);
+
+
+    // ----- SIZE & NUMBER OF SIDES ----- //
+    asteroids[a_spwn].size = GetRandomValue(ASTEROID_SIZE(asteroids[a_spwn].type) - 5, ASTEROID_SIZE(asteroids[a_spwn].type) + 5);
+    asteroids[a_spwn].sides = GetRandomValue(ASTEROID_SIDES(asteroids[a_spwn].type) - 1, ASTEROID_SIDES(asteroids[a_spwn].type));
+
+
+    // ----- STARTING POSITION ----- //
+    // 50% chance to spawn on the top or bottom of the screen.
+    if (GetRandomValue(0, 1)) 
+    {
+        asteroids[a_spwn].pos.x = GetRandomValue(0, GetScreenWidth());
+        // 50% chance to spawn in the top.
+        if (GetRandomValue(0, 1)) {
+            asteroids[a_spwn].pos.y = 0 - asteroids[a_spwn].size;
+        }
+        // 50 % chance to spawn in the bottom.
+        else {
+            asteroids[a_spwn].pos.y = GetScreenHeight() + asteroids[a_spwn].size;
+        }
+    }
+
+    // 50% chance to spawn on the right or left of the screen.
+    else 
+    {
+        asteroids[a_spwn].pos.y = GetRandomValue(0, GetScreenHeight());
+        // 50% chance to spawn on the left.
+        if (GetRandomValue(0, 1)) {
+            asteroids[a_spwn].pos.x = 0 - asteroids[a_spwn].size;
+        }
+        // 50 % chance to spawn on the right.
+        else {
+            asteroids[a_spwn].pos.x = GetScreenWidth() + asteroids[a_spwn].size;
+        }
+    }
+
+
+    // ----- VELOCITY ----- //
+    // Get a random point on screen for the asteroid to go towards.
+    Vector2 rand_point = { GetRandomValue(GetScreenWidth() * 0.3, GetScreenWidth() * 0.7), 
+                            GetRandomValue(GetScreenHeight() * 0.3, GetScreenHeight() * 0.7) };
+
+    // Get a vector from the asteroid's position to the random point.
+    Vector2 rand_vector = { rand_point.x - asteroids[a_spwn].pos.x, rand_point.y - asteroids[a_spwn].pos.y };
+
+    // Normalize the vector.
+    {
+        // Get the magnitude of the velocity vector.
+        int magnitude = sqrt(pow(rand_vector.x, 2) + pow(rand_vector.y, 2));
+
+        // Divide its values by its magnitude.
+        rand_vector.x /= magnitude;
+        rand_vector.y /= magnitude;
+    }
+
+    // Set the asteroid's velocity.
+    asteroids[a_spwn].velocity = rand_vector;
+
+
+    // ----- ROTATION ----- //
+    asteroids[a_spwn].rotation = (float)(GetRandomValue(0, 360) * PI / 180);
+    asteroids[a_spwn].rotation_speed = (float)(GetRandomValue(1, 30)) * PI / 180;
+}
+
+
+void asteroid_update(Asteroid* asteroids)
+{
+    for (int i = 0; i < ASTEROID_MAX_AMOUNT; i++) {
+        if (asteroids[i].type != A_DESTROYED) 
+        {
+            // ----- MOVEMENT & ROTATION ----- //
+            asteroids[i].pos.x += asteroids[i].velocity.x * ASTEROID_SPEED(asteroids[i].type);
+            asteroids[i].pos.y += asteroids[i].velocity.y * ASTEROID_SPEED(asteroids[i].type);
+            asteroids[i].rotation += asteroids[i].rotation_speed;
+
+            // ----- SCREEN WRAPPING ----- //
+            if (asteroids[i].pos.x + asteroids[i].size + 5 < 0) {
+                asteroids[i].pos.x = GetScreenWidth() + asteroids[i].size;
+            }
+            else if (asteroids[i].pos.x - asteroids[i].size - 5 > GetScreenWidth()) {
+                asteroids[i].pos.x = 0 - asteroids[i].size;
+            }
+            if (asteroids[i].pos.y + asteroids[i].size + 5 < 0) {
+                asteroids[i].pos.y = GetScreenHeight() + asteroids[i].size;
+            }
+            else if (asteroids[i].pos.y - asteroids[i].size - 5 > GetScreenHeight()) {
+                asteroids[i].pos.y = 0 - asteroids[i].size;
+            }
+        }
+    }
+}
+
+
+void asteroid_break(Asteroid* asteroids, int break_i)
+{
+    AsteroidType new_type = asteroids[break_i].type - 1;
+
+    if (new_type != A_DESTROYED)
+    {
+        // Find another index to put the second part of the broken asteroid.
+        int part_i = 0;
+        for (int i = 0; i < ASTEROID_MAX_AMOUNT; i++) {
+            if (asteroids[i].type == A_DESTROYED) {
+                part_i = i;
+                break;
+            }
+        }
+
+        // Set the type.
+        asteroids[part_i].type = new_type;
+        asteroids[break_i].type = new_type;
+        // Set the position.
+        asteroids[part_i].pos = asteroids[break_i].pos;
+        // Set the size.
+        asteroids[part_i].size = GetRandomValue(ASTEROID_SIZE(new_type) - 5, ASTEROID_SIZE(new_type) + 5);
+        asteroids[break_i].size = GetRandomValue(ASTEROID_SIZE(new_type) - 5, ASTEROID_SIZE(new_type) + 5);
+        // Set the side count.
+        asteroids[part_i].sides = GetRandomValue(ASTEROID_SIDES(new_type) - 1, ASTEROID_SIDES(new_type));
+        asteroids[break_i].sides = GetRandomValue(ASTEROID_SIDES(new_type) - 1, ASTEROID_SIDES(new_type));
+        // Set the rotation
+        asteroids[part_i].rotation = (float)(GetRandomValue(0, 360) * PI / 180);
+        asteroids[break_i].rotation = (float)(GetRandomValue(0, 360) * PI / 180);
+        // Set the rotation speed.
+        asteroids[part_i].rotation_speed = (float)(GetRandomValue(1, 30)) * PI / 180;
+        asteroids[break_i].rotation_speed = (float)(GetRandomValue(1, 30)) * PI / 180;
+        // Set the velocity as orthogonal to the velocity of the broken asteroid. The velocity of both parts is be opposed.
+        asteroids[break_i].velocity = Vector2Rotate(asteroids[break_i].velocity, 90);
+        asteroids[part_i].velocity = Vector2Negate(asteroids[break_i].velocity);
+    }
+    else {
+        asteroids[break_i].type = new_type;
+    }
+}
+
+
+void asteroid_draw(Asteroid* asteroids)
+{
+    for (int i = 0; i < ASTEROID_MAX_AMOUNT; i++) {
+        if (asteroids[i].type != A_DESTROYED) {
+            // Sraw the asteroid interior.
+            DrawPoly(asteroids[i].pos, asteroids[i].sides, asteroids[i].size, asteroids[i].rotation, BLACK);
+            // Draw the asteroid exterior lines.
+            DrawPolyLines(asteroids[i].pos, asteroids[i].sides, asteroids[i].size, asteroids[i].rotation, WHITE);
+            // Draw the asteroid number on it.
+            DrawText(TextFormat("%d", i+1), asteroids[i].pos.x - 5, asteroids[i].pos.y - 5, 20, WHITE);
+        }
+    }
+}
