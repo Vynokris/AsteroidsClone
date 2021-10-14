@@ -180,45 +180,44 @@ void game_save_score(Game* game)
     fclose(f);
 
     // Find the place to insert the player's highscore.
-    int highscore_insert_i = -1;
-    int highscore_replace_i = -1;
-    for (int i = 4; i >= 0; i--) {
+    int insert_i = -1;
+    bool insert = false;
+    bool replace = false;
+    for (int i = 4; i >= 0; i--) 
+    {
         if (i == 0 || highscores[i-1][0] != 0) {
-            if (game->score == highscores[i][0] && game->end_time - game->start_time < highscores[i][1])
-                highscore_replace_i = i;
-            if (highscore_replace_i == -1 && game->score > highscores[i][0])
-                highscore_insert_i = i;
+            // If the player got a score that is already on the highscore board.
+            if (game->score == highscores[i][0]) {
+                if (game->end_time - game->start_time < highscores[i][1])
+                    replace = true;
+                else
+                    insert = false;
+                break;
+            }
+            // If the player got a highscore that isn't on the score board.
+            else if (game->score > highscores[i][0]) {
+                insert_i = i;
+                insert = true;
+            }
+            else
+                break;
         }
     }
 
-    // TODO: Figure out why there is some wierdness with score saving.
-
-    // Insert the player's score.
-    if (highscore_insert_i != -1) 
+    // Insert the player's score into the array.
+    if (insert) 
     {
-        int last_score[2] = { 0, 0 };
-        bool move = false;
-        for (int i = 0; i < 5; i++) 
-        {
-            last_score[0] = highscores[i][0]; last_score[1] = highscores[i][1];
-
-            if (i == highscore_insert_i) {
-                highscores[i][0] = game->score;
-                highscores[i][1] = game->end_time - game->start_time;
-                move = true;
-                i++;
-            }
-
-            if (i == highscore_replace_i) {
-                highscores[i][0] = game->score;
-                highscores[i][1] = game->end_time - game->start_time;
-                break;
-            }
-            
-            if (move) {
-                highscores[i][0] = last_score[0]; highscores[i][1] = last_score[1];
+        // Shift the scores to the right in the array.
+        if (!replace) {
+            for (int i = 4; i >= insert_i && i > 0; i--) {
+                highscores[i][0] = highscores[i-1][0];
+                highscores[i][1] = highscores[i-1][1];
             }
         }
+
+        // Insert the player's score.
+        highscores[insert_i][0] = game->score;
+        highscores[insert_i][1] = game->end_time - game->start_time;
     }
     
     // Save the player's score.
