@@ -3,4 +3,5 @@
 *.d
 *.bin
 .vscode
+main
 push.sh
