@@ -1,5 +1,7 @@
 <h1>TODO:</h1>
-- check the gamepad input
-- compose music
-- get sound effects
-- create a main menu
+<ul>
+<li> check the gamepad input </li>
+<li> compose music </li>
+<li> get sound effects </li>
+<li> create a main menu </li>
+</ul>
