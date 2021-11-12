@@ -44,6 +44,22 @@ void player_update(Player* player, Bullet* bullets)
         }
     }
 
+    // Accelerate with the left joystick.
+    else if (IsGamepadAvailable(0) && (fabs(GetGamepadAxisMovement(0, 0)) > 0.1 ||
+                                       fabs(GetGamepadAxisMovement(0, 1)) > 0.1))
+    {
+        // Get the direction of the joystick.
+        Vector2 dir = (Vector2){ GetGamepadAxisMovement(0, 0), GetGamepadAxisMovement(0, 1) };
+
+        // If the player is under the maximum velocity, make him accelerate.
+        if (Vector2Length(player->velocity) < PLAYER_MAX_VELOCITY)
+            player->velocity = Vector2Add(                player->velocity,                         Vector2Multiply(Vector2Normalize(dir), (Vector2){ 0.6, 0.6 }));
+
+        // If the player is at maximum velocity, stop accelerating.
+        else
+            player->velocity = Vector2Add(Vector2Multiply(player->velocity, (Vector2){ 0.7, 0.7 }), Vector2Multiply(Vector2Normalize(dir), (Vector2){ 0.3, 0.3 }));
+    }
+
     // Slow down if the player isn't pressing the up arrow.
     else {
         if (sqrt(pow(player->velocity.x, 2) + pow(player->velocity.y, 2)) > 0) {
@@ -60,8 +76,17 @@ void player_update(Player* player, Bullet* bullets)
         player->rotation += PI / 48;
     }
 
+    // Rotate according to the right gamepad joystick.
+    if (IsGamepadAvailable(0) && (fabs(GetGamepadAxisMovement(0, 2)) > 0.1 || 
+                                  fabs(GetGamepadAxisMovement(0, 3)) > 0.1))
+    {
+        player->rotation = Vector2Angle(Vector2Normalize((Vector2){ GetGamepadAxisMovement(0, 2), GetGamepadAxisMovement(0, 3) }),
+                                        (Vector2){ 1, 0 });
+    }
+
     // Shoot.
-    if (IsKeyPressed(KEY_SPACE)) {
+    if (IsKeyPressed(KEY_SPACE) ||
+       (IsGamepadAvailable(0) && IsGamepadButtonPressed(0, 12))) {
         player_shoot(player, bullets);
     }
 

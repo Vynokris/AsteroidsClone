@@ -10,6 +10,8 @@
 #include "collisions.h"
 #include "ui.h"
 
+#define SCREEN_SHAKE_DURATION 15
+
 
 typedef struct Game {
     bool game_over_trigger;
@@ -18,6 +20,7 @@ typedef struct Game {
     int multiplier;
     int asteroid_spawn_speed;
     int asteroid_spawn_delay;
+    int screen_offset[2];
     time_t start_time;
     time_t end_time;
     Player player;
@@ -29,6 +32,10 @@ typedef struct Game {
 
 // Returns the highest power of 2 smaller than x.
 int get_power_of_two(int x);
+
+
+// Updates the screen shake.
+void screen_shake(Game* game, bool start_shake, int duration_multiplier, int new_intensity);
 
 
 // Initializes all game values and objects.

@@ -7,6 +7,31 @@ int get_power_of_two(int x)
 }
 
 
+void screen_shake(Game* game, bool start_shake, int duration_multiplier, int new_intensity)
+{
+    static int remaining_frames = 0;
+    static int intensity = 1;
+
+    if (start_shake)
+    {
+        remaining_frames = SCREEN_SHAKE_DURATION;
+        intensity = new_intensity;
+    }
+    
+    if (remaining_frames > 0)
+    {
+        remaining_frames--;
+        game->screen_offset[0] = GetRandomValue(-5 * intensity, 5 * intensity);
+        game->screen_offset[1] = GetRandomValue(-5 * intensity, 5 * intensity);
+    }
+    else if (game->screen_offset[0] != 0 || game->screen_offset[1] != 0)
+    {
+        game->screen_offset[0] = 0;
+        game->screen_offset[1] = 0;
+    }
+}
+
+
 
 void game_init(Game* game)
 {
@@ -27,6 +52,9 @@ void game_init(Game* game)
 
     // Initialize the score multiplier.
     game->multiplier = 1;
+
+    // Initialize the screen offset values.
+    game->screen_offset[0] = 0; game->screen_offset[1] = 0;
 
     // Initialize the player.
     player_init(&game->player);
@@ -58,6 +86,9 @@ void game_update(Game* game)
     // Update the asteroids.
     asteroid_update(game->asteroids);
 
+    // Update the screen shake.
+    screen_shake(game, false, 1, 1);
+
     if (!is_game_over(game)) 
     {
         // Spawn asteroids.
@@ -74,8 +105,10 @@ void game_update(Game* game)
         bullet_update(game->bullets, &game->multiplier);
 
         // Check for collisions and act accordingly.
-        player_collision(&game->player, game->asteroids, &game->multiplier);
-        bullet_collision(game->bullets, game->asteroids, &game->score, &game->multiplier);
+        if (player_collision(&game->player, game->asteroids, &game->multiplier))
+            screen_shake(game, true, 2, 2);
+        if (bullet_collision(game->bullets, game->asteroids, &game->score, &game->multiplier))
+            screen_shake(game, true, 1, 1);
     }
 
     // Stop the game timer upon game over.
