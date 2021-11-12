@@ -1,4 +1,4 @@
-TODO:
+#TODO:
 - check the gamepad input
 - compose music
 - get sound effects
