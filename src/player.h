@@ -1,7 +1,7 @@
 #pragma once
 
 #include "raylib.h"
-#include "raymath.h"
+#include "my_math.h"
 #include <stdbool.h>
 
 #include "bullet.h"
@@ -16,8 +16,8 @@ typedef struct Player {
     int hp;
     int invulnerable; // Refers to the number of frames of invulnerability left.
     float rotation;
-    Vector2 pos;
-    Vector2 velocity;
+    MyVector2 pos;
+    MyVector2 velocity;
 } Player;
 
 

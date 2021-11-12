@@ -11,13 +11,17 @@ int main(void)
 
     srand(time(NULL));
 
-    // Set the window size.
-    const int screenWidth = 1920;
-    const int screenHeight = 1080;
+    // Create the window
+    InitWindow(1920, 1080, "Asteroids clone");
 
+    // Get the monitor resolution.
+    const int screenWidth = GetMonitorWidth(0);
+    const int screenHeight = GetMonitorHeight(0);
 
-    // Create the window and make it fullscreen.
-    InitWindow(screenWidth, screenHeight, "Asteroids clone");
+    // Change the window size and position to fit in the monitor.
+    SetWindowPosition(0, 0);
+    SetWindowSize(screenWidth, screenHeight);
+
 
     // Initialize the game structure.
     Game game;

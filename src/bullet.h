@@ -1,7 +1,7 @@
 #pragma once
 
 #include "raylib.h"
-#include "raymath.h"
+#include "my_math.h"
 
 #define BULLET_MAX_AMOUNT 3
 #define BULLET_SPEED 12
@@ -12,7 +12,7 @@
 typedef struct Bullet {
     int lifespan;
     float rotation;
-    Vector2 pos;
+    MyVector2 pos;
 } Bullet;
 
 

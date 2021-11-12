@@ -7,11 +7,9 @@ void asteroid_init(Asteroid* asteroids)
     for (int i = 0; i < ASTEROID_MAX_AMOUNT; i++) 
     {
         // Position.
-        asteroids[i].pos.x = 0;
-        asteroids[i].pos.y = 0;
+        asteroids[i].pos = Vector2Zero();
         // Velocity.
-        asteroids[i].velocity.x = 0;
-        asteroids[i].velocity.y = 0;
+        asteroids[i].velocity = Vector2Zero();
         // Rotation.
         asteroids[i].rotation = 0.0f;
         asteroids[i].rotation_speed = 0.0f;
@@ -52,39 +50,39 @@ void spawn_asteroid(Asteroid* asteroids)
     // 50% chance to spawn on the top or bottom of the screen.
     if (GetRandomValue(0, 1)) 
     {
-        asteroids[a_spwn].pos.x = GetRandomValue(0, GetScreenWidth());
+        asteroids[a_spwn].pos.x = GetRandomValue(0, GetMonitorWidth(0));
         // 50% chance to spawn in the top.
         if (GetRandomValue(0, 1)) {
             asteroids[a_spwn].pos.y = 0 - asteroids[a_spwn].size;
         }
         // 50 % chance to spawn in the bottom.
         else {
-            asteroids[a_spwn].pos.y = GetScreenHeight() + asteroids[a_spwn].size;
+            asteroids[a_spwn].pos.y = GetMonitorHeight(0) + asteroids[a_spwn].size;
         }
     }
 
     // 50% chance to spawn on the right or left of the screen.
     else 
     {
-        asteroids[a_spwn].pos.y = GetRandomValue(0, GetScreenHeight());
+        asteroids[a_spwn].pos.y = GetRandomValue(0, GetMonitorHeight(0));
         // 50% chance to spawn on the left.
         if (GetRandomValue(0, 1)) {
             asteroids[a_spwn].pos.x = 0 - asteroids[a_spwn].size;
         }
         // 50 % chance to spawn on the right.
         else {
-            asteroids[a_spwn].pos.x = GetScreenWidth() + asteroids[a_spwn].size;
+            asteroids[a_spwn].pos.x = GetMonitorWidth(0) + asteroids[a_spwn].size;
         }
     }
 
 
     // ----- VELOCITY ----- //
     // Get a random point on screen for the asteroid to go towards.
-    Vector2 rand_point = { GetRandomValue(GetScreenWidth() * 0.3, GetScreenWidth() * 0.7), 
-                            GetRandomValue(GetScreenHeight() * 0.3, GetScreenHeight() * 0.7) };
+    MyVector2 rand_point = Vector2Create(GetRandomValue(GetMonitorWidth(0)  * 0.3, GetMonitorWidth(0)  * 0.7), 
+                                         GetRandomValue(GetMonitorHeight(0) * 0.3, GetMonitorHeight(0) * 0.7));
 
     // Get a vector from the asteroid's position to the random point.
-    Vector2 rand_vector = { rand_point.x - asteroids[a_spwn].pos.x, rand_point.y - asteroids[a_spwn].pos.y };
+    MyVector2 rand_vector = Vector2Create(rand_point.x - asteroids[a_spwn].pos.x, rand_point.y - asteroids[a_spwn].pos.y);
 
     // Normalize the vector.
     {
@@ -118,15 +116,15 @@ void asteroid_update(Asteroid* asteroids)
 
             // ----- SCREEN WRAPPING ----- //
             if (asteroids[i].pos.x + asteroids[i].size + 5 < 0) {
-                asteroids[i].pos.x = GetScreenWidth() + asteroids[i].size;
+                asteroids[i].pos.x = GetMonitorWidth(0) + asteroids[i].size;
             }
-            else if (asteroids[i].pos.x - asteroids[i].size - 5 > GetScreenWidth()) {
+            else if (asteroids[i].pos.x - asteroids[i].size - 5 > GetMonitorWidth(0)) {
                 asteroids[i].pos.x = 0 - asteroids[i].size;
             }
             if (asteroids[i].pos.y + asteroids[i].size + 5 < 0) {
-                asteroids[i].pos.y = GetScreenHeight() + asteroids[i].size;
+                asteroids[i].pos.y = GetMonitorHeight(0) + asteroids[i].size;
             }
-            else if (asteroids[i].pos.y - asteroids[i].size - 5 > GetScreenHeight()) {
+            else if (asteroids[i].pos.y - asteroids[i].size - 5 > GetMonitorHeight(0)) {
                 asteroids[i].pos.y = 0 - asteroids[i].size;
             }
         }
@@ -181,9 +179,9 @@ void asteroid_draw(Asteroid* asteroids)
     for (int i = 0; i < ASTEROID_MAX_AMOUNT; i++) {
         if (asteroids[i].type != A_DESTROYED) {
             // Sraw the asteroid interior.
-            DrawPoly(asteroids[i].pos, asteroids[i].sides, asteroids[i].size, asteroids[i].rotation, BLACK);
+            DrawPoly(toRayVec(asteroids[i].pos), asteroids[i].sides, asteroids[i].size, asteroids[i].rotation, BLACK);
             // Draw the asteroid exterior lines.
-            DrawPolyLines(asteroids[i].pos, asteroids[i].sides, asteroids[i].size, asteroids[i].rotation, WHITE);
+            DrawPolyLines(toRayVec(asteroids[i].pos), asteroids[i].sides, asteroids[i].size, asteroids[i].rotation, WHITE);
             // Draw the asteroid number on it.
             DrawText(TextFormat("%d", i+1), 
                      asteroids[i].pos.x - MeasureText(TextFormat("%d", i+1), 20) / 2, 

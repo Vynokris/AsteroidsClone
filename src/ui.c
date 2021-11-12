@@ -29,20 +29,20 @@ void ui_draw(Game* game)
 
         // Draw the score multiplier.
         DrawText(TextFormat("x%d", get_power_of_two(game->multiplier)), 
-                GetScreenWidth() / 2 - MeasureText(TextFormat("x%d", game->multiplier), ui->timer_size) / 2, 
-                GetScreenHeight() / 2 + text_offset_y, 
+                GetMonitorWidth(0) / 2 - MeasureText(TextFormat("x%d", game->multiplier), ui->timer_size) / 2, 
+                GetMonitorHeight(0) / 2 + text_offset_y, 
                 ui->timer_size, 
-                (Color){ (game->multiplier >= 16 ? RED.r : Remap(get_power_of_two(game->multiplier), 1, 8, GREEN.r, YELLOW.r)), 
-                         (game->multiplier >= 16 ? RED.g : Remap(get_power_of_two(game->multiplier), 1, 8, GREEN.g, YELLOW.g)),
-                         (game->multiplier >= 16 ? RED.b : Remap(get_power_of_two(game->multiplier), 1, 8, GREEN.b, YELLOW.b)),
+                (Color){ (game->multiplier >= 16 ? RED.r : remap(get_power_of_two(game->multiplier), 1, 8, GREEN.r, YELLOW.r)), 
+                         (game->multiplier >= 16 ? RED.g : remap(get_power_of_two(game->multiplier), 1, 8, GREEN.g, YELLOW.g)),
+                         (game->multiplier >= 16 ? RED.b : remap(get_power_of_two(game->multiplier), 1, 8, GREEN.b, YELLOW.b)),
                          200 });
 
         text_offset_y += ui->timer_size;
 
         // Draw the score.
         DrawText(TextFormat("%d", game->score), 
-                GetScreenWidth() / 2 - MeasureText(TextFormat("%d", game->score), ui->score_size) / 2, 
-                GetScreenHeight() / 2 + text_offset_y, 
+                GetMonitorWidth(0) / 2 - MeasureText(TextFormat("%d", game->score), ui->score_size) / 2, 
+                GetMonitorHeight(0) / 2 + text_offset_y, 
                 ui->score_size, 
                 GRAY);
         
@@ -50,16 +50,16 @@ void ui_draw(Game* game)
         
         // Draw the timer.
         DrawText(TextFormat("%ds", time(NULL) - game->start_time),
-                GetScreenWidth() / 2 - MeasureText(TextFormat("%ds", time(NULL) - game->start_time), ui->timer_size) / 2, 
-                GetScreenHeight() / 2 + text_offset_y, 
+                GetMonitorWidth(0) / 2 - MeasureText(TextFormat("%ds", time(NULL) - game->start_time), ui->timer_size) / 2, 
+                GetMonitorHeight(0) / 2 + text_offset_y, 
                 ui->timer_size, 
                 GRAY);
         
         text_offset_y += ui->timer_size * 2.5;
 
         // Draw the lives.
-        Vector2 triangle_offset = { (GetScreenWidth() - ((game->player.hp - 1) * ui->life_size) - ((game->player.hp - 1) * 8)) / 2,
-                                    GetScreenHeight() / 2 + text_offset_y };
+        Vector2 triangle_offset = { (GetMonitorWidth(0) - ((game->player.hp - 1) * ui->life_size) - ((game->player.hp - 1) * 8)) / 2,
+                                    GetMonitorHeight(0) / 2 + text_offset_y };
         
         for (int i = 0; i < game->player.hp; i++) {
             if (i != game->player.hp - 1 || (game->player.invulnerable / 10) % 2 == 0) {
@@ -88,8 +88,8 @@ void ui_draw(Game* game)
             }
         }
 
-        Vector2 bullet_offset = { (GetScreenWidth() - ((num_bullets - 1) * ui->bullet_size) - ((num_bullets - 1) * 16)) / 2, 
-                                GetScreenHeight() / 2 + text_offset_y };
+        Vector2 bullet_offset = { (GetMonitorWidth(0) - ((num_bullets - 1) * ui->bullet_size) - ((num_bullets - 1) * 16)) / 2, 
+                                GetMonitorHeight(0) / 2 + text_offset_y };
 
         for (int i = 0; i < num_bullets; i++) {
             DrawCircle(bullet_offset.x + i * (ui->bullet_size + 16), 
@@ -113,29 +113,29 @@ void game_over_screen(Game* game)
 
     // Draw the game over text.
     DrawText("GAME OVER", 
-             GetScreenWidth() / 2 - MeasureText("GAME OVER", ui->game_over_size) / 2, 
-             GetScreenHeight() / 2 - (ui->game_over_size + 5) * 2, 
+             GetMonitorWidth(0) / 2 - MeasureText("GAME OVER", ui->game_over_size) / 2, 
+             GetMonitorHeight(0) / 2 - (ui->game_over_size + 5) * 2, 
              ui->game_over_size, 
              RED);
 
     // Draw the final score.
     DrawText(TextFormat("Score: %d", game->score), 
-             GetScreenWidth() / 2 - MeasureText(TextFormat("Score: %d", game->score), ui->info_size) / 2, 
-             GetScreenHeight() / 2 - ui->game_over_size + 5, 
+             GetMonitorWidth(0) / 2 - MeasureText(TextFormat("Score: %d", game->score), ui->info_size) / 2, 
+             GetMonitorHeight(0) / 2 - ui->game_over_size + 5, 
              ui->info_size, 
              WHITE);
 
     // Draw the game duration.
     DrawText(TextFormat("Duration: %ds", game->end_time - game->start_time), 
-             GetScreenWidth() / 2 - MeasureText(TextFormat("Duration: %ds", game->end_time - game->start_time), ui->info_size) / 2, 
-             GetScreenHeight() / 2 - ui->game_over_size + ui->info_size + 10, 
+             GetMonitorWidth(0) / 2 - MeasureText(TextFormat("Duration: %ds", game->end_time - game->start_time), ui->info_size) / 2, 
+             GetMonitorHeight(0) / 2 - ui->game_over_size + ui->info_size + 10, 
              ui->info_size, 
              WHITE);
 
     // Show highscores title.
     DrawText("Highscores:", 
-             GetScreenWidth() / 2 - MeasureText("Highscores:", game->ui.highscore_size) / 2, 
-             GetScreenHeight() / 2 - ui->game_over_size + ui->info_size * 4, 
+             GetMonitorWidth(0) / 2 - MeasureText("Highscores:", game->ui.highscore_size) / 2, 
+             GetMonitorHeight(0) / 2 - ui->game_over_size + ui->info_size * 4, 
              ui->highscore_size, 
              GRAY);
 
@@ -152,16 +152,16 @@ void game_over_screen(Game* game)
         fgets(line_i, 64, f);
 
         DrawText(TextFormat((highscores[i][0] > 0 ? "#%d: %d %ds" : "#%d: -"), i+1, highscores[i][0], highscores[i][1]),
-                GetScreenWidth() / 2 - MeasureText(TextFormat((highscores[i][0] > 0 ? "#%d: %d %ds" : "#%d: -"), i+1, highscores[i][0], highscores[i][1]), ui->highscore_size) / 2,
-                GetScreenHeight() / 2 - ui->game_over_size + ui->info_size * 4 + (ui->highscore_size + 5) * (i+1),
+                GetMonitorWidth(0) / 2 - MeasureText(TextFormat((highscores[i][0] > 0 ? "#%d: %d %ds" : "#%d: -"), i+1, highscores[i][0], highscores[i][1]), ui->highscore_size) / 2,
+                GetMonitorHeight(0) / 2 - ui->game_over_size + ui->info_size * 4 + (ui->highscore_size + 5) * (i+1),
                 ui->highscore_size,
                 (highscores[i][0] == game->score ? WHITE: GRAY));
     }
 
     // Draw the restart promt.
     DrawText("Press any key to restart or press [Esc] to quit", 
-             GetScreenWidth() / 2 - MeasureText("Press any key to restart or press [Esc] to quit", ui->restart_size) / 2, 
-             GetScreenHeight() - ui->restart_size * 1.5, 
+             GetMonitorWidth(0) / 2 - MeasureText("Press any key to restart or press [Esc] to quit", ui->restart_size) / 2, 
+             GetMonitorHeight(0) - ui->restart_size * 1.5, 
              ui->restart_size, 
              WHITE);
 }

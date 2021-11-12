@@ -6,7 +6,7 @@ void player_init(Player* player)
     player->hp = 3;
     player->invulnerable = 60 * 3;
     player->rotation = -PI / 2;
-    player->pos = (Vector2){ GetScreenWidth() / 2, GetScreenHeight() / 2 };
+    player->pos = Vector2Create(GetMonitorWidth(0) / 2, GetMonitorHeight(0) / 2);
     player->velocity = Vector2Zero();
 }
 
@@ -49,15 +49,15 @@ void player_update(Player* player, Bullet* bullets)
                                        fabs(GetGamepadAxisMovement(0, 1)) > 0.1))
     {
         // Get the direction of the joystick.
-        Vector2 dir = (Vector2){ GetGamepadAxisMovement(0, 0), GetGamepadAxisMovement(0, 1) };
+        MyVector2 dir = Vector2Create(GetGamepadAxisMovement(0, 0), GetGamepadAxisMovement(0, 1));
 
         // If the player is under the maximum velocity, make him accelerate.
         if (Vector2Length(player->velocity) < PLAYER_MAX_VELOCITY)
-            player->velocity = Vector2Add(                player->velocity,                         Vector2Multiply(Vector2Normalize(dir), (Vector2){ 0.6, 0.6 }));
+            player->velocity = Vector2Add(                   player->velocity,       Vector2MultiplyVal(Vector2Normalize(dir), 0.6));
 
         // If the player is at maximum velocity, stop accelerating.
         else
-            player->velocity = Vector2Add(Vector2Multiply(player->velocity, (Vector2){ 0.7, 0.7 }), Vector2Multiply(Vector2Normalize(dir), (Vector2){ 0.3, 0.3 }));
+            player->velocity = Vector2Add(Vector2MultiplyVal(player->velocity, 0.7), Vector2MultiplyVal(Vector2Normalize(dir), 0.3));
     }
 
     // Slow down if the player isn't pressing the up arrow.
@@ -80,8 +80,7 @@ void player_update(Player* player, Bullet* bullets)
     if (IsGamepadAvailable(0) && (fabs(GetGamepadAxisMovement(0, 2)) > 0.1 || 
                                   fabs(GetGamepadAxisMovement(0, 3)) > 0.1))
     {
-        player->rotation = Vector2Angle(Vector2Normalize((Vector2){ GetGamepadAxisMovement(0, 2), GetGamepadAxisMovement(0, 3) }),
-                                        (Vector2){ 1, 0 });
+        player->rotation = Vector2GetAngle(Vector2Normalize(Vector2Create(GetGamepadAxisMovement(0, 2), GetGamepadAxisMovement(0, 3))));
     }
 
     // Shoot.
@@ -96,15 +95,15 @@ void player_update(Player* player, Bullet* bullets)
 
     // Wrap around the screen.
     if (player->pos.x + 10 < 0) {
-        player->pos.x = GetScreenWidth() + 10;
+        player->pos.x = GetMonitorWidth(0) + 10;
     }
-    else if (player->pos.x - 10 > GetScreenWidth()) {
+    else if (player->pos.x - 10 > GetMonitorWidth(0)) {
         player->pos.x = 0 - 10;
     }
     if (player->pos.y + 10 < 0) {
-        player->pos.y = GetScreenHeight() + 10;
+        player->pos.y = GetMonitorHeight(0) + 10;
     }
-    else if (player->pos.y - 10 > GetScreenHeight()) {
+    else if (player->pos.y - 10 > GetMonitorHeight(0)) {
         player->pos.y = 0 - 10;
     }
 
@@ -125,8 +124,8 @@ void player_invulnerability(Player* player)
 void player_respawn(Player* player)
 {
     // Put the player in the middle of the screen.
-    player->pos.x = GetScreenWidth() / 2;
-    player->pos.y = GetScreenHeight() / 2;
+    player->pos.x = GetMonitorWidth(0) / 2;
+    player->pos.y = GetMonitorHeight(0) / 2;
 
     // Set the player's velocity to 0.
     player->velocity = Vector2Zero();

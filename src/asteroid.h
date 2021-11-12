@@ -1,8 +1,7 @@
 #pragma once
 
 #include "raylib.h"
-#include "raymath.h"
-#include <math.h>
+#include "my_math.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -26,8 +25,8 @@ typedef struct Asteroid {
     int sides;
     float rotation;
     float rotation_speed;
-    Vector2 pos;
-    Vector2 velocity;
+    MyVector2 pos;
+    MyVector2 velocity;
     AsteroidType type;
 } Asteroid;
 

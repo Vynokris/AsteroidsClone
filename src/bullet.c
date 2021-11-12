@@ -19,7 +19,7 @@ void bullet_update(Bullet* bullets, int* multiplier)
             bullets[i].pos.y += sinf(bullets[i].rotation) * BULLET_SPEED;
             bullets[i].lifespan--;
 
-            if (bullets[i].pos.x < 0 || bullets[i].pos.x > GetScreenWidth() || bullets[i].pos.y < 0 || bullets[i].pos.y > GetScreenHeight()) {
+            if (bullets[i].pos.x < 0 || bullets[i].pos.x > GetMonitorWidth(0) || bullets[i].pos.y < 0 || bullets[i].pos.y > GetMonitorHeight(0)) {
                 bullets[i].lifespan = 0;
                 *multiplier = 1;
             }
