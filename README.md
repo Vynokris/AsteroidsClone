@@ -9,9 +9,18 @@ This project is a clone of the retro game "Asteroids" done in C using `raylib` a
 <ul>
 <li> Player movement </li>
     <ul>
-    <li> Press the right and left arrows to turn. </li>
-    <li> Press the up arrow to accelerate. </li>
-    <li> The player has a forward velocity that diminishes when he isn't accelerating. </li>
+    <li> Keyboard </li>
+        <ul>
+        <li> Press the right and left arrows to turn. </li>
+        <li> Press the up arrow to accelerate. </li>
+        <li> The player has a forward velocity that diminishes when he isn't accelerating. </li>
+        </ul>
+    <li> Gamepad </li>
+        <ul>
+        <li> Use the right joystick to turn. </li>
+        <li> Use the left joystick to move. </li>
+        <li> Press R2 to shoot. </li>
+        </ul>
     </ul>
 <li> Player HP </li>
     <ul>
@@ -44,6 +53,7 @@ This project is a clone of the retro game "Asteroids" done in C using `raylib` a
     <ul>
     <li> The UI was reworked to be more modern. </li>
     <li> All information is at the center of the screen, rendered under all game objects. </li>
+    <li> Some screen shake has been added upon asteroid destruction. </li>
     </ul>
 <li> Asteroids score yeild </li>
     <ul>
