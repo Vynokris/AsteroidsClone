@@ -4,4 +4,4 @@
 *.bin
 .vscode
 main
-push.sh
+push

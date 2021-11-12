@@ -185,7 +185,10 @@ void asteroid_draw(Asteroid* asteroids)
             // Draw the asteroid exterior lines.
             DrawPolyLines(asteroids[i].pos, asteroids[i].sides, asteroids[i].size, asteroids[i].rotation, WHITE);
             // Draw the asteroid number on it.
-            DrawText(TextFormat("%d", i+1), asteroids[i].pos.x - 5, asteroids[i].pos.y - 5, 20, WHITE);
+            DrawText(TextFormat("%d", i+1), 
+                     asteroids[i].pos.x - MeasureText(TextFormat("%d", i+1), 20) / 2, 
+                     asteroids[i].pos.y - MeasureText(TextFormat("%d", i+1), 20) / 2, 
+                     20, WHITE);
         }
     }
 }

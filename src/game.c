@@ -129,9 +129,8 @@ void debug_keys(Game* game)
 {
     if (!is_game_over(game)) {
         // Show debug buttons trigger.
-        if (IsKeyPressed(KEY_KP_ENTER)) {
+        if (IsKeyPressed(KEY_KP_ENTER))
             game->show_debug_keys = !(game->show_debug_keys);
-        }
 
         // Kill key.
         if (IsKeyPressed(KEY_KP_0))
@@ -146,29 +145,28 @@ void debug_keys(Game* game)
         }
 
         // Spawn asteroid key.
-        if (IsKeyPressed(KEY_KP_ADD)) {
+        if (IsKeyPressed(KEY_KP_ADD))
             spawn_asteroid(game->asteroids);
-        }
 
         // Give hp key.
-        if (IsKeyPressed(KEY_KP_DECIMAL)) {
+        if (IsKeyPressed(KEY_KP_DECIMAL))
             game->player.hp++;
-        }
 
         // Give score key.
-        if (IsKeyDown(KEY_KP_1)) {
+        if (IsKeyDown(KEY_KP_1))
             game->score += 10 * game->multiplier;
-        }
 
         // Increment multiplier key.
-        if (IsKeyPressed(KEY_KP_2)) {
+        if (IsKeyPressed(KEY_KP_2))
             game->multiplier++;
-        }
 
         // Increment time key.
-        if (IsKeyPressed(KEY_KP_3)) {
+        if (IsKeyPressed(KEY_KP_3))
             game->start_time-=10;
-        }
+
+        // Invulnerability key.
+        if (IsKeyPressed(KEY_KP_MULTIPLY))
+            game->player.invulnerable += 60 * 5;
     }
 }
 
@@ -191,7 +189,7 @@ void game_render(Game* game)
 
         // Show the debug keys.
         if (game->show_debug_keys) {
-            DrawText("[KP_ENTER]: Show this cheat menu\n[KP_0]: Kill player\n[KP_DECIMAL]: Give hp\n[KP_1]: Give score\n[KP_2]: Increment multiplier\n[KP_3]: Add game time\n[KP_ADD]: Spawn asteroid\n[KP_SUBSTRACT]: Clear highscores",
+            DrawText("[KP_ENTER]: Show this cheat menu\n[KP_0]: Kill player\n[KP_DECIMAL]: Give hp\n[KP_MULTIPLY]: Add 5s of invulnerability\n[KP_1]: Give score\n[KP_2]: Increment multiplier\n[KP_3]: Add game time\n[KP_ADD]: Spawn asteroid\n[KP_SUBSTRACT]: Clear highscores",
                      10, 30, 20, GRAY);
         }
     }
