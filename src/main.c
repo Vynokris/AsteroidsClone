@@ -51,7 +51,13 @@ int main(void)
             ClearBackground(BLACK);
 
             // The render texture must be y-flipped due to default OpenGL coordinates (left-bottom).
-            DrawTextureRec(game.ui.rendertexture.texture, (Rectangle){ 0, 0, screenWidth, -screenHeight }, (Vector2){ game.screen_offset[0], game.screen_offset[1] }, WHITE);
+            DrawTexturePro(game.ui.rendertexture.texture, 
+                          (Rectangle){ 0.0f, 0.0f, (float)game.ui.rendertexture.texture.width, (float)-game.ui.rendertexture.texture.height },
+                          (Rectangle){ (GetScreenWidth() - ((float)GetScreenWidth()*game.ui.scale))*0.5, (GetScreenHeight() - ((float)GetScreenHeight()*game.ui.scale))*0.5, (float)GetScreenWidth()*game.ui.scale, (float)GetScreenHeight()*game.ui.scale }, 
+                          (Vector2){ 0, 0 }, 
+                          game.ui.rotation, 
+                          WHITE);
+            // DrawTextureRec(game.ui.rendertexture.texture, (Rectangle){ 0, 0, screenWidth, -screenHeight }, (Vector2){ game.screen_offset[0], game.screen_offset[1] }, WHITE);
             DrawTextureRec(game.   rendertexture.texture, (Rectangle){ 0, 0, screenWidth, -screenHeight }, (Vector2){ game.screen_offset[0], game.screen_offset[1] }, WHITE);
         }
         EndDrawing();

@@ -98,6 +98,9 @@ void game_update(Game* game)
     // Update the player's particles.
     particle_update(game->player.particles);
 
+    // Update the ui.
+    ui_update(game);
+
     // Update the screen shake.
     screen_shake(game, false, 1, 1);
 

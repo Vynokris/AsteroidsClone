@@ -5,7 +5,7 @@
 
 #define BULLET_MAX_AMOUNT 3
 #define BULLET_SPEED 12
-#define BULLET_LIFESPAN 240
+#define BULLET_LIFESPAN 120
 
 
 // Structure for a bullet.

@@ -17,6 +17,30 @@ void ui_init(Ui* ui)
 
     // Load the ui's rendertexture.
     ui->rendertexture = LoadRenderTexture(GetMonitorWidth(0), GetMonitorHeight(0));
+    SetTextureFilter(ui->rendertexture.texture, TEXTURE_FILTER_BILINEAR);
+    ui->scale = 1;
+    ui->rotation = 0;
+}
+
+
+void ui_update(Game* game)
+{
+    static int player_score = 0;
+    static int score_scale_frames = 0;
+    if (game->score != player_score)
+    {
+        score_scale_frames = 40;
+        player_score = game->score;
+    }
+
+    if (score_scale_frames > 30)
+        game->ui.scale = remap(score_scale_frames, 40, 30, 1, 1.1);
+        
+    else if (score_scale_frames > 0)
+        game->ui.scale = remap(score_scale_frames, 30, 1, 1.1, 1);
+
+    if (score_scale_frames > 0)
+        score_scale_frames--;
 }
 
 

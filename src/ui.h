@@ -17,6 +17,8 @@ typedef struct Ui {
     float restart_size;
 
     // The ui's rendertexture.
+    double scale;
+    double rotation;
     RenderTexture2D rendertexture;
 } Ui;
 
@@ -27,6 +29,9 @@ typedef struct Game Game;
 
 // Initialize the ui structure.
 void ui_init(Ui* ui);
+
+// Updates the ui scale.
+void ui_update(Game* game);
 
 // Render the game ui: score, multiplier, lives and bullets.
 void ui_render(Game* game);
