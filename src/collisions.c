@@ -24,6 +24,18 @@ bool player_collision(Player* player, Asteroid* asteroids, int* multiplier)
 
                 // Check collision between it and the player.
                 if (collisionSAT(player_shape, asteroid_shape)) {
+                    // Spawn death particles.
+                    for (int j = 0; j < 3; j++)
+                    {
+                        particle_spawn(player->particles,
+                                       ShapeCenterOfMass(player_shape),
+                                       Vector2FromAngle(degToRad(radToDeg(Vector2GetAngle(Vector2Negate(Vector2Normal(Vector2FromSegment(ShapeGetSide(player_shape, j)))))) + GetRandomValue(-45, 45)), 1),
+                                       120, 
+                                       GetRandomValue(3, 7), 
+                                       6, 8, 
+                                       PARTICLE_LINES_FILLED, (Vector3){ 255, 255, 255 });
+                    }
+                    
                     player_respawn(player);
                     *multiplier = 1;
                     player->hp--;
@@ -67,7 +79,7 @@ bool bullet_collision(Bullet* bullets, Asteroid* asteroids, int* score, int* mul
                                 particle_spawn(asteroid_particles,
                                                asteroids[j].pos,
                                                Vector2FromAngle(degToRad(radToDeg(Vector2GetAngle(Vector2Negate(Vector2Normal(Vector2FromSegment(ShapeGetSide(asteroid_shape, k)))))) + GetRandomValue(-45, 45)), 1),
-                                               60, 
+                                               120, 
                                                GetRandomValue(3, 7), 
                                                4, 6, 
                                                PARTICLE_LINES_FILLED, (Vector3){ 255, 255, 255 });

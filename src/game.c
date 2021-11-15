@@ -79,6 +79,9 @@ void game_init(Game* game)
         spawn_asteroid(game->asteroids);
     }
 
+    // Load the game's rendertexture.
+    game->rendertexture = LoadRenderTexture(GetMonitorWidth(0), GetMonitorHeight(0));
+
     // Initialize the game's ui.
     ui_init(&game->ui);
 }
@@ -184,32 +187,35 @@ void debug_keys(Game* game)
 
 void game_render(Game* game)
 {
-    // Draw the ui.
-    ui_draw(game);
-
-    // Draw the asteroids' particles.
-    particle_draw(game->asteroid_particles);
-
-    // Draw the player's particles.
-    particle_draw(game->player.particles);
-
-    // Draw the asteroids.
-    asteroid_draw(game->asteroids);
-
-    if (!is_game_over(game))
+    BeginTextureMode(game->rendertexture);
     {
-        // Draw the bullets.
-        bullet_draw(game->bullets);
+        ClearBackground((Color){ 0, 0, 0, 0 });
 
-        // Draw the player.
-        player_draw(&game->player);
+        // Draw the asteroids' particles.
+        particle_draw(game->asteroid_particles);
 
-        // Show the debug keys.
-        if (game->show_debug_keys) {
-            DrawText("[KP_ENTER]: Show this cheat menu\n[KP_0]: Kill player\n[KP_DECIMAL]: Give hp\n[KP_MULTIPLY]: Add 5s of invulnerability\n[KP_1]: Give score\n[KP_2]: Increment multiplier\n[KP_3]: Add game time\n[KP_ADD]: Spawn asteroid\n[KP_SUBSTRACT]: Clear highscores",
-                     10, 30, 20, GRAY);
+        // Draw the player's particles.
+        particle_draw(game->player.particles);
+
+        // Draw the asteroids.
+        asteroid_draw(game->asteroids);
+
+        if (!is_game_over(game))
+        {
+            // Draw the bullets.
+            bullet_draw(game->bullets);
+
+            // Draw the player.
+            player_draw(&game->player);
+
+            // Show the debug keys.
+            if (game->show_debug_keys) {
+                DrawText("[KP_ENTER]: Show this cheat menu\n[KP_0]: Kill player\n[KP_DECIMAL]: Give hp\n[KP_MULTIPLY]: Add 5s of invulnerability\n[KP_1]: Give score\n[KP_2]: Increment multiplier\n[KP_3]: Add game time\n[KP_ADD]: Spawn asteroid\n[KP_SUBSTRACT]: Clear highscores",
+                        10, 30, 20, GRAY);
+            }
         }
     }
+    EndTextureMode();
 }
 
 

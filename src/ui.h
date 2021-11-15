@@ -15,6 +15,9 @@ typedef struct Ui {
     float info_size;
     float highscore_size;
     float restart_size;
+
+    // The ui's rendertexture.
+    RenderTexture2D rendertexture;
 } Ui;
 
 
@@ -26,7 +29,7 @@ typedef struct Game Game;
 void ui_init(Ui* ui);
 
 // Render the game ui: score, multiplier, lives and bullets.
-void ui_draw(Game* game);
+void ui_render(Game* game);
 
 // Show the game over screen.
 void game_over_screen(Game* game);

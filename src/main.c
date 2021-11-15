@@ -11,8 +11,8 @@ int main(void)
 
     srand(time(NULL));
 
-    // Create the window
-    InitWindow(1920, 1080, "Asteroids clone");
+    // Create the window.
+    InitWindow(1920, 1080, "Modern Asteroids");
 
     // Get the monitor resolution.
     const int screenWidth = GetMonitorWidth(0);
@@ -30,9 +30,6 @@ int main(void)
     // Set the window's fps.
     SetTargetFPS(60);
 
-    // Create a RenderTexture2D to be used for render to texture.
-    RenderTexture2D rendertexture = LoadRenderTexture(screenWidth, screenHeight);
-
 
     // ----- GAME LOOP ----- //
 
@@ -42,22 +39,20 @@ int main(void)
 
         debug_keys(&game);
 
-        // Render the game objects on a texture.
-        BeginTextureMode(rendertexture);
-        {
-            ClearBackground(BLACK);
+        // Renders the ui on the ui rendertexture.
+        ui_render(&game);
 
-            game_render(&game);
-        }
-        EndTextureMode();
+        // Render the game objects on the game rendertexture.
+        game_render(&game);
 
-        // Apply shaders to the texture and render it.
+        // Render the two rendertextures on screen.
         BeginDrawing();
         {
             ClearBackground(BLACK);
 
-            // The render texture must be y-flipped due to default OpenGL coordinates (left-bottom)
-            DrawTextureRec(rendertexture.texture, (Rectangle){ 0, 0, screenWidth, -screenHeight }, (Vector2){ game.screen_offset[0], game.screen_offset[1] }, WHITE);
+            // The render texture must be y-flipped due to default OpenGL coordinates (left-bottom).
+            DrawTextureRec(game.ui.rendertexture.texture, (Rectangle){ 0, 0, screenWidth, -screenHeight }, (Vector2){ game.screen_offset[0], game.screen_offset[1] }, WHITE);
+            DrawTextureRec(game.   rendertexture.texture, (Rectangle){ 0, 0, screenWidth, -screenHeight }, (Vector2){ game.screen_offset[0], game.screen_offset[1] }, WHITE);
         }
         EndDrawing();
     }

@@ -28,6 +28,7 @@ typedef struct Game {
     Asteroid asteroids[ASTEROID_MAX_AMOUNT];
     Particle asteroid_particles[PARTICLE_MAX_AMOUNT];
     Ui ui;
+    RenderTexture2D rendertexture;
 } Game;
 
 
