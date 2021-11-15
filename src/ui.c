@@ -59,7 +59,7 @@ void ui_draw(Game* game)
 
         // Draw the lives.
         Vector2 triangle_offset = { (GetMonitorWidth(0) - ((game->player.hp - 1) * ui->life_size) - ((game->player.hp - 1) * 8)) / 2,
-                                    GetMonitorHeight(0) / 2 + text_offset_y };
+                                     GetMonitorHeight(0) / 2 + text_offset_y };
         
         for (int i = 0; i < game->player.hp; i++) {
             if (i != game->player.hp - 1 || (game->player.invulnerable / 10) % 2 == 0) {

@@ -8,6 +8,7 @@ void player_init(Player* player)
     player->rotation = -PI / 2;
     player->pos = Vector2Create(GetMonitorWidth(0) / 2, GetMonitorHeight(0) / 2);
     player->velocity = Vector2Zero();
+    particle_init(player->particles);
 }
 
 
@@ -41,6 +42,20 @@ void player_update(Player* player, Bullet* bullets)
         else {
             player->velocity.x *= sqrt(pow(cos(player->rotation) * PLAYER_SPEED, 2) + pow(sin(player->rotation) * PLAYER_SPEED, 2));
             player->velocity.y *= sqrt(pow(cos(player->rotation) * PLAYER_SPEED, 2) + pow(sin(player->rotation) * PLAYER_SPEED, 2));
+        }
+
+        // Spawn particles behind him, only if he is visible.
+        if ((player->invulnerable / 10) % 2 == 0) {
+            particle_spawn(player->particles, 
+                           Vector2Add(player->pos, Vector2FromAngle(player->rotation + (GetRandomValue(0, 1) ? PI/2 : -PI/2), 
+                                                                    GetRandomValue(0, 10))), 
+                           Vector2FromAngle(degToRad(radToDeg(player->rotation - 180) + GetRandomValue(-90, 90)), 1),
+                           30,
+                           5,
+                           2,
+                           15,
+                           PARTICLE_LINES_FILLED,
+                           (Vector3){ 200, 200, 200 });
         }
     }
 
@@ -144,9 +159,9 @@ void player_draw(Player* player)
     {
         Vector2 points[3] = 
         {
-            { player->pos.x + sinf(player->rotation) * 20, player->pos.y - cosf(player->rotation) * 20 },
-            { player->pos.x - sinf(player->rotation) * 20, player->pos.y + cosf(player->rotation) * 20 },
-            { player->pos.x + cosf(player->rotation) * 40, player->pos.y + sinf(player->rotation) * 40 },
+            { player->pos.x + sin(player->rotation) * 20, player->pos.y - cos(player->rotation) * 20 },
+            { player->pos.x - sin(player->rotation) * 20, player->pos.y + cos(player->rotation) * 20 },
+            { player->pos.x + cos(player->rotation) * 40, player->pos.y + sin(player->rotation) * 40 },
         };
         DrawTriangle(points[0], points[1], points[2], BLACK);
         DrawTriangleLines(points[0], points[1], points[2], WHITE);

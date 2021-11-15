@@ -65,6 +65,9 @@ void game_init(Game* game)
     // Initilaize the asteroids.
     asteroid_init(game->asteroids);
 
+    // Initialize the asteroid particles.
+    particle_init(game->asteroid_particles);
+
     // Initialize the asteroid spawn speed.
     game->asteroid_spawn_speed = 300;
 
@@ -86,6 +89,12 @@ void game_update(Game* game)
     // Update the asteroids.
     asteroid_update(game->asteroids);
 
+    // Update the particles' particles.
+    particle_update(game->asteroid_particles);
+
+    // Update the player's particles.
+    particle_update(game->player.particles);
+
     // Update the screen shake.
     screen_shake(game, false, 1, 1);
 
@@ -105,10 +114,12 @@ void game_update(Game* game)
         bullet_update(game->bullets, &game->multiplier);
 
         // Check for collisions and act accordingly.
-        if (player_collision(&game->player, game->asteroids, &game->multiplier))
+        if (player_collision(&game->player, game->asteroids, &game->multiplier)) {
             screen_shake(game, true, 2, 2);
-        if (bullet_collision(game->bullets, game->asteroids, &game->score, &game->multiplier))
+        }
+        if (bullet_collision(game->bullets, game->asteroids, &game->score, &game->multiplier, game->asteroid_particles)) {
             screen_shake(game, true, 1, 1);
+        }
     }
 
     // Stop the game timer upon game over.
@@ -175,6 +186,12 @@ void game_render(Game* game)
 {
     // Draw the ui.
     ui_draw(game);
+
+    // Draw the asteroids' particles.
+    particle_draw(game->asteroid_particles);
+
+    // Draw the player's particles.
+    particle_draw(game->player.particles);
 
     // Draw the asteroids.
     asteroid_draw(game->asteroids);

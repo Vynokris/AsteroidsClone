@@ -26,6 +26,7 @@ typedef struct Game {
     Player player;
     Bullet bullets[BULLET_MAX_AMOUNT];
     Asteroid asteroids[ASTEROID_MAX_AMOUNT];
+    Particle asteroid_particles[PARTICLE_MAX_AMOUNT];
     Ui ui;
 } Game;
 

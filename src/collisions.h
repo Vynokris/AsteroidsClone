@@ -1,5 +1,6 @@
 #pragma once
 
+#include "particle.h"
 #include "player.h"
 #include "bullet.h"
 #include "asteroid.h"
@@ -11,4 +12,4 @@ bool player_collision(Player* player, Asteroid* asteroids, int* multiplier);
 
 // Check if any bullets are colliding with any asteroid. 
 // If that is the case, destroy the bullet and break the asteroid.
-bool bullet_collision(Bullet* bullets, Asteroid* asteroids, int* score, int* multiplier);
+bool bullet_collision(Bullet* bullets, Asteroid* asteroids, int* score, int* multiplier, Particle* asteroid_particles);

@@ -4,8 +4,10 @@
 #include "my_math.h"
 #include <stdbool.h>
 
+#include "particle.h"
 #include "bullet.h"
 
+#include "stdio.h"
 
 #define PLAYER_MAX_VELOCITY 8
 #define PLAYER_SPEED 0.5
@@ -18,6 +20,7 @@ typedef struct Player {
     float rotation;
     MyVector2 pos;
     MyVector2 velocity;
+    Particle particles[PARTICLE_MAX_AMOUNT];
 } Player;
 
 

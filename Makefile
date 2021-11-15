@@ -1,4 +1,4 @@
-OBJS=src/main.o src/game.o src/player.o src/bullet.o src/asteroid.o src/collisions.o src/ui.o
+OBJS=src/main.o src/game.o src/particle.o src/player.o src/bullet.o src/asteroid.o src/collisions.o src/ui.o
 PROGRAM=main
 
 CFLAGS=-O0 -g

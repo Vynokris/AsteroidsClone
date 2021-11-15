@@ -4,15 +4,27 @@
 #include "my_math.h"
 
 #define PARTICLE_MAX_AMOUNT 256
-#define PARTICLE_LIFESPAN 120
+
+// Enum for the particle styles.
+typedef enum ParticleStyle {
+    PARTICLE_FILLED,
+    PARTICLE_LINES,
+    PARTICLE_LINES_FILLED,
+} ParticleStyle;
 
 // Structure for particles.
 typedef struct Particle {
+    int max_lifespan;
     int lifespan;
+    int sides;
+    ParticleStyle style;
     double rotation;
     double rotation_speed;
+    double min_size;
+    double max_size;
     MyVector2 pos;
     MyVector2 velocity;
+    Vector3 color;
 } Particle;
 
 
@@ -20,7 +32,7 @@ typedef struct Particle {
 void particle_init(Particle* particles);
 
 // Spawns a particle at the given position, with the given initial velocity and new velocity.
-void particle_spawn(Particle* particles, MyVector2 pos, MyVector2 initial_velocity, MyVector2 new_velocity);
+void particle_spawn(Particle* particles, MyVector2 pos, MyVector2 velocity, int max_lifespan, int sides, double min_size, double max_size, ParticleStyle style, Vector3 color);
 
 // Updates all the given particles.
 void particle_update(Particle* particles);
