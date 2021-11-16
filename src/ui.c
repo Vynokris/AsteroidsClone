@@ -19,28 +19,51 @@ void ui_init(Ui* ui)
     ui->rendertexture = LoadRenderTexture(GetMonitorWidth(0), GetMonitorHeight(0));
     SetTextureFilter(ui->rendertexture.texture, TEXTURE_FILTER_BILINEAR);
     ui->scale = 1;
-    ui->rotation = 0;
 }
 
 
 void ui_update(Game* game)
 {
+    // Get the ui.
+    Ui* ui = &game->ui;
+
+
+    // ----- SCALE THE UI UPON SCORE GAIN ----- //
+
+    // Player's score from the last frames.
     static int player_score = 0;
+
+    // Remaining amount of frames for ui scaling due to score gain.
     static int score_scale_frames = 0;
+
+    // Update the ui scale when the player gets score.
     if (game->score != player_score)
     {
         score_scale_frames = 40;
         player_score = game->score;
     }
 
-    if (score_scale_frames > 30)
-        game->ui.scale = remap(score_scale_frames, 40, 30, 1, 1.1);
-        
-    else if (score_scale_frames > 0)
-        game->ui.scale = remap(score_scale_frames, 30, 1, 1.1, 1);
+    // Scale the ui during the score scaling frames.
+    if (score_scale_frames > 30) {
+        ui->scale = remap(score_scale_frames, 40, 30, 1, 1.1);
+    }
+    else if (score_scale_frames > 0) {
+        ui->scale = remap(score_scale_frames, 30, 1, 1.1, 1);
+    }
 
-    if (score_scale_frames > 0)
+    // Decrement the remaining scaling frames.
+    if (score_scale_frames > 0) {
         score_scale_frames--;
+    }
+
+
+    // ----- SCALE THE UI TO BEAT TO A BPM ----- //
+
+    // Frames counter.
+    static int frame_counter = 0;
+
+    // Get the beat scale.
+    ui->beat_scale = get_beat_scale(&frame_counter, 1.05);
 }
 
 
@@ -96,7 +119,7 @@ void ui_render(Game* game)
                                          GetMonitorHeight(0) / 2 + text_offset_y };
             
             for (int i = 0; i < game->player.hp; i++) {
-                if (i != game->player.hp - 1 || (game->player.invulnerable / 10) % 2 == 0) {
+                if (i != game->player.hp - 1 || (!game->player.invulnerable || game->player.scale > 1.06)) {
                     Vector2 points[3] = 
                     {
                         { (triangle_offset.x + (i * (ui->life_size + 8))) + sinf(-PI/2) * ui->life_size / 2, 
@@ -110,26 +133,6 @@ void ui_render(Game* game)
                     };
                     DrawTriangleLines(points[0], points[1], points[2], GRAY);
                 }
-            }
-
-            text_offset_y += ui->life_size;
-
-            // Draw the bullets.
-            int num_bullets = 0;
-            for (int i = 0; i < sizeof(game->bullets) / sizeof(game->bullets[0]); i++) {
-                if (game->bullets[i].lifespan == 0) {
-                    num_bullets++;
-                }
-            }
-
-            Vector2 bullet_offset = { (GetMonitorWidth(0) - ((num_bullets - 1) * ui->bullet_size) - ((num_bullets - 1) * 16)) / 2, 
-                                       GetMonitorHeight(0) / 2 + text_offset_y };
-
-            for (int i = 0; i < num_bullets; i++) {
-                DrawCircle(bullet_offset.x + i * (ui->bullet_size + 16), 
-                        bullet_offset.y, 
-                        ui->bullet_size, 
-                        GRAY);
             }
         }
 

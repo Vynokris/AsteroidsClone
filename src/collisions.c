@@ -6,13 +6,6 @@ bool player_collision(Player* player, Asteroid* asteroids, int* multiplier)
     // If the player isn't invulnerable.
     if (!player->invulnerable) 
     {
-        // Create a shape for the player.
-        ShapeInfo player_shape;
-        player_shape.type = TRIANGLE;
-        player_shape.data.triangle = TriangleCreate(Vector2Create(player->pos.x + sinf(player->rotation) * 20, player->pos.y - cosf(player->rotation) * 20),
-                                                    Vector2Create(player->pos.x - sinf(player->rotation) * 20, player->pos.y + cosf(player->rotation) * 20),
-                                                    Vector2Create(player->pos.x + cosf(player->rotation) * 40, player->pos.y + sinf(player->rotation) * 40));
-
         // For each non-destroyed asteroid.
         for (int i = 0; i < ASTEROID_MAX_AMOUNT; i++) {
             if (asteroids[i].type != A_DESTROYED) 
@@ -23,13 +16,13 @@ bool player_collision(Player* player, Asteroid* asteroids, int* multiplier)
                 asteroid_shape.data.polygon = PolygonCreate(asteroids[i].pos, asteroids[i].size, asteroids[i].rotation, asteroids[i].sides);
 
                 // Check collision between it and the player.
-                if (collisionSAT(player_shape, asteroid_shape)) {
+                if (collisionSAT(player->shape, asteroid_shape)) {
                     // Spawn death particles.
                     for (int j = 0; j < 3; j++)
                     {
                         particle_spawn(player->particles,
-                                       ShapeCenterOfMass(player_shape),
-                                       Vector2FromAngle(degToRad(radToDeg(Vector2GetAngle(Vector2Negate(Vector2Normal(Vector2FromSegment(ShapeGetSide(player_shape, j)))))) + GetRandomValue(-45, 45)), 1),
+                                       ShapeCenterOfMass(player->shape),
+                                       Vector2FromAngle(degToRad(radToDeg(Vector2GetAngle(Vector2Negate(Vector2Normal(Vector2FromSegment(ShapeGetSide(player->shape, j)))))) + GetRandomValue(-45, 45)), 1),
                                        120, 
                                        GetRandomValue(3, 7), 
                                        6, 8, 
@@ -68,7 +61,7 @@ bool bullet_collision(Bullet* bullets, Asteroid* asteroids, int* score, int* mul
                     // Create a shape for the asteroid.
                     ShapeInfo asteroid_shape;
                     asteroid_shape.type = POLYGON;
-                    asteroid_shape.data.polygon = PolygonCreate(asteroids[j].pos, asteroids[j].size, asteroids[j].rotation, asteroids[j].sides);
+                    asteroid_shape.data.polygon = PolygonCreate(asteroids[j].pos, asteroids[j].size * asteroids[i].scale, asteroids[j].rotation, asteroids[j].sides);
 
                     // Check collision between the two.
                     if (collisionSAT(bullet_shape, asteroid_shape)) {

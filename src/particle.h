@@ -1,9 +1,10 @@
 #pragma once
 
+#include <stdarg.h>
 #include "raylib.h"
 #include "my_math.h"
 
-#define PARTICLE_MAX_AMOUNT 256
+#include "define.h"
 
 // Enum for the particle styles.
 typedef enum ParticleStyle {
@@ -38,4 +39,7 @@ void particle_spawn(Particle* particles, MyVector2 pos, MyVector2 velocity, int 
 void particle_update(Particle* particles);
 
 // Draws all the given particles on screen.
-void particle_draw(Particle* particles);
+void particle_draw(Particle* particles, double scale);
+
+// Renders all the particles of all the given particle arrays.
+void particle_draw_all(int array_amount, ...);

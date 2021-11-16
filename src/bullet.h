@@ -3,9 +3,7 @@
 #include "raylib.h"
 #include "my_math.h"
 
-#define BULLET_MAX_AMOUNT 3
-#define BULLET_SPEED 12
-#define BULLET_LIFESPAN 120
+#include "define.h"
 
 
 // Structure for a bullet.

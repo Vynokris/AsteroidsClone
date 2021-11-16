@@ -17,6 +17,8 @@ void asteroid_init(Asteroid* asteroids)
         asteroids[i].type = A_DESTROYED;
         // Size.
         asteroids[i].size = 0;
+        // Scale.
+        asteroids[i].scale = 1;
         // Side count.
         asteroids[i].sides = 0;
     }
@@ -99,20 +101,27 @@ void spawn_asteroid(Asteroid* asteroids)
 
 
     // ----- ROTATION ----- //
-    asteroids[a_spwn].rotation = (float)(GetRandomValue(0, 360) * PI / 180);
-    asteroids[a_spwn].rotation_speed = (float)(GetRandomValue(1, 30)) * PI / 180;
+    asteroids[a_spwn].rotation = degToRad(GetRandomValue(0, 360));
+    asteroids[a_spwn].rotation_speed = degToRad((float)GetRandomValue(1, 10) / 10);
 }
 
 
 void asteroid_update(Asteroid* asteroids)
 {
+    // Update the player's scale to the beat.
+    static int frame_counter = 0;
+    double beat_scale = get_beat_scale(&frame_counter, 1.15);
+
     for (int i = 0; i < ASTEROID_MAX_AMOUNT; i++) {
         if (asteroids[i].type != A_DESTROYED) 
         {
-            // ----- MOVEMENT & ROTATION ----- //
+            // ----- MOVEMENT & ROTATION & SCALE ----- //
             asteroids[i].pos.x += asteroids[i].velocity.x * ASTEROID_SPEED(asteroids[i].type);
             asteroids[i].pos.y += asteroids[i].velocity.y * ASTEROID_SPEED(asteroids[i].type);
             asteroids[i].rotation += asteroids[i].rotation_speed;
+            asteroids[i].scale = beat_scale;
+            if (beat_scale >= 1.14)
+                asteroids[i].rotation += PI / 50;
 
             // ----- SCREEN WRAPPING ----- //
             if (asteroids[i].pos.x + asteroids[i].size + 5 < 0) {
@@ -148,25 +157,25 @@ void asteroid_break(Asteroid* asteroids, int break_i)
         }
 
         // Set the type.
-        asteroids[part_i].type = new_type;
+        asteroids[part_i].type =  new_type;
         asteroids[break_i].type = new_type;
         // Set the position.
         asteroids[part_i].pos = asteroids[break_i].pos;
         // Set the size.
-        asteroids[part_i].size = GetRandomValue(ASTEROID_SIZE(new_type) - 5, ASTEROID_SIZE(new_type) + 5);
+        asteroids[part_i].size =  GetRandomValue(ASTEROID_SIZE(new_type) - 5, ASTEROID_SIZE(new_type) + 5);
         asteroids[break_i].size = GetRandomValue(ASTEROID_SIZE(new_type) - 5, ASTEROID_SIZE(new_type) + 5);
         // Set the side count.
-        asteroids[part_i].sides = GetRandomValue(ASTEROID_SIDES(new_type) - 1, ASTEROID_SIDES(new_type));
+        asteroids[part_i].sides =  GetRandomValue(ASTEROID_SIDES(new_type) - 1, ASTEROID_SIDES(new_type));
         asteroids[break_i].sides = GetRandomValue(ASTEROID_SIDES(new_type) - 1, ASTEROID_SIDES(new_type));
-        // Set the rotation
-        asteroids[part_i].rotation = (float)(GetRandomValue(0, 360) * PI / 180);
-        asteroids[break_i].rotation = (float)(GetRandomValue(0, 360) * PI / 180);
+        // Set the rotation.
+        asteroids[part_i].rotation =  degToRad(GetRandomValue(0, 360));
+        asteroids[break_i].rotation = degToRad(GetRandomValue(0, 360));
         // Set the rotation speed.
-        asteroids[part_i].rotation_speed = (float)(GetRandomValue(1, 30)) * PI / 180;
-        asteroids[break_i].rotation_speed = (float)(GetRandomValue(1, 30)) * PI / 180;
+        asteroids[part_i].rotation_speed =  degToRad((float)GetRandomValue(1, 10) / 10);
+        asteroids[break_i].rotation_speed = degToRad((float)GetRandomValue(1, 10) / 10);
         // Set the velocity as orthogonal to the velocity of the broken asteroid. The velocity of both parts is be opposed.
         asteroids[break_i].velocity = Vector2Rotate(asteroids[break_i].velocity, 90);
-        asteroids[part_i].velocity = Vector2Negate(asteroids[break_i].velocity);
+        asteroids[part_i].velocity =  Vector2Negate(asteroids[break_i].velocity);
     }
     else {
         asteroids[break_i].type = new_type;
@@ -176,17 +185,21 @@ void asteroid_break(Asteroid* asteroids, int break_i)
 
 void asteroid_draw(Asteroid* asteroids)
 {
+    // Get the beat scale.
+    static int frame_counter = 0;
+    double beat_scale = get_beat_scale(&frame_counter, 1.05);
+
     for (int i = 0; i < ASTEROID_MAX_AMOUNT; i++) {
         if (asteroids[i].type != A_DESTROYED) {
             // Sraw the asteroid interior.
-            DrawPoly(toRayVec(asteroids[i].pos), asteroids[i].sides, asteroids[i].size, asteroids[i].rotation, BLACK);
+            DrawPoly(toRayVec(asteroids[i].pos), asteroids[i].sides, asteroids[i].size * asteroids[i].scale, radToDeg(asteroids[i].rotation), BLACK);
             // Draw the asteroid exterior lines.
-            DrawPolyLines(toRayVec(asteroids[i].pos), asteroids[i].sides, asteroids[i].size, asteroids[i].rotation, WHITE);
+            DrawPolyLines(toRayVec(asteroids[i].pos), asteroids[i].sides, asteroids[i].size * asteroids[i].scale, radToDeg(asteroids[i].rotation), WHITE);
             // Draw the asteroid number on it.
             DrawText(TextFormat("%d", i+1), 
                      asteroids[i].pos.x - MeasureText(TextFormat("%d", i+1), 20) / 2, 
                      asteroids[i].pos.y - MeasureText(TextFormat("%d", i+1), 20) / 2, 
-                     20, WHITE);
+                     20 * beat_scale, WHITE);
         }
     }
 }

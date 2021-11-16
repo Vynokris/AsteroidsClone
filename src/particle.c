@@ -35,8 +35,8 @@ void particle_spawn(Particle* particles, MyVector2 pos, MyVector2 velocity, int 
             particles[i].sides = sides;
             particles[i].min_size = min_size;
             particles[i].max_size = max_size;
-            particles[i].rotation = (float)(GetRandomValue(0, 360) * PI / 180);
-            particles[i].rotation_speed = (float)(GetRandomValue(1, 30)) * PI / 180;
+            particles[i].rotation = degToRad(GetRandomValue(0, 360));
+            particles[i].rotation_speed = degToRad((float)GetRandomValue(1, 10) / 10);
             particles[i].style = style;
             particles[i].color = color;
             break;
@@ -59,7 +59,7 @@ void particle_update(Particle* particles)
 }
 
 // Draws all the given particles on screen.
-void particle_draw(Particle* particles)
+void particle_draw(Particle* particles, double scale)
 {
     for (int i = 0; i < PARTICLE_MAX_AMOUNT; i++) {
         if (particles[i].lifespan > 0) 
@@ -68,8 +68,8 @@ void particle_draw(Particle* particles)
             if (particles[i].style == PARTICLE_FILLED) {
                 DrawPoly(toRayVec(particles[i].pos), 
                         particles[i].sides, 
-                        remap(particles[i].lifespan, particles[i].max_lifespan, 0, particles[i].min_size, particles[i].max_size), 
-                        particles[i].rotation, 
+                        remap(particles[i].lifespan, particles[i].max_lifespan, 0, particles[i].min_size, particles[i].max_size) * scale, 
+                        radToDeg(particles[i].rotation), 
                         (Color){ particles[i].color.x, 
                                  particles[i].color.y, 
                                  particles[i].color.z, 
@@ -80,8 +80,8 @@ void particle_draw(Particle* particles)
             else if (particles[i].style == PARTICLE_LINES) {
                 DrawPolyLines(toRayVec(particles[i].pos), 
                               particles[i].sides, 
-                              remap(particles[i].lifespan, particles[i].max_lifespan, 0, particles[i].min_size, particles[i].max_size), 
-                              particles[i].rotation, 
+                              remap(particles[i].lifespan, particles[i].max_lifespan, 0, particles[i].min_size, particles[i].max_size) * scale, 
+                              radToDeg(particles[i].rotation), 
                               (Color){ particles[i].color.x, 
                                        particles[i].color.y, 
                                        particles[i].color.z, 
@@ -92,13 +92,13 @@ void particle_draw(Particle* particles)
             else if (particles[i].style == PARTICLE_LINES_FILLED) {
                 DrawPoly(toRayVec(particles[i].pos), 
                         particles[i].sides, 
-                        remap(particles[i].lifespan, particles[i].max_lifespan, 0, particles[i].min_size, particles[i].max_size), 
-                        particles[i].rotation, 
+                        remap(particles[i].lifespan, particles[i].max_lifespan, 0, particles[i].min_size, particles[i].max_size) * scale, 
+                        radToDeg(particles[i].rotation), 
                         (Color){ 0, 0, 0, remap(particles[i].lifespan, particles[i].max_lifespan, 0, 255, 0) });
                 DrawPolyLines(toRayVec(particles[i].pos), 
                               particles[i].sides, 
-                              remap(particles[i].lifespan, particles[i].max_lifespan, 0, particles[i].min_size, particles[i].max_size), 
-                              particles[i].rotation, 
+                              remap(particles[i].lifespan, particles[i].max_lifespan, 0, particles[i].min_size, particles[i].max_size) * scale, 
+                              radToDeg(particles[i].rotation), 
                               (Color){ particles[i].color.x, 
                                        particles[i].color.y, 
                                        particles[i].color.z, 
@@ -106,4 +106,24 @@ void particle_draw(Particle* particles)
             }
         }
     }
+}
+
+// Renders all the particles of all the given particle arrays.
+void particle_draw_all(int array_amount, ...)
+{
+    // Get the beat scale.
+    static int frame_counter = 0;
+    double beat_scale = get_beat_scale(&frame_counter, 3);
+
+    // Initialize the argument list with the given array amount.
+    va_list arg_list;
+    va_start(arg_list, array_amount);
+
+    // Render all of the given particle arrays.
+    for (int i = 0; i < array_amount; i++) {
+        particle_draw(va_arg(arg_list, Particle*), beat_scale);
+    }
+        
+    // Clear the memory used by the argument list.
+    va_end(arg_list);
 }

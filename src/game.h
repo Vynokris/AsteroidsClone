@@ -4,13 +4,12 @@
 #include <stdbool.h>
 #include <time.h>
 
+#include "define.h"
 #include "player.h"
 #include "asteroid.h"
 #include "bullet.h"
 #include "collisions.h"
 #include "ui.h"
-
-#define SCREEN_SHAKE_DURATION 15
 
 
 typedef struct Game {

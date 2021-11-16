@@ -7,6 +7,7 @@
 #include <assert.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <stdarg.h>
 
 
 // ---------- DEFINES ---------- //
@@ -191,6 +192,13 @@ static inline double remap(double val, double inputStart, double inputEnd, doubl
     return outputStart + (val - inputStart) * (outputEnd - outputStart) / (inputEnd - inputStart);
 }
 
+// Returns a random double within the given range and at the given precision.
+static inline double GetRandomFloat(double start, double end, double precision)
+{
+    // TODO: test this.
+    return (float)GetRandomValue(roundInt(start / precision), roundInt(end / precision)) * precision;
+}
+
 
 // ---------- OBJECT CREATION ---------- //
 
@@ -252,6 +260,40 @@ static inline MyPolygon PolygonCreate(MyVector2 origin, double radius, double ro
 static inline MyCircle CircleCreate(MyVector2 origin, double radius)
 {
     return (MyCircle){origin, radius};
+}
+
+// Create a shape given a shape type and shape data.
+static inline ShapeInfo ShapeInfoCreate(ShapeTypes type, ...)
+{
+    // Initialize the argument list.
+    va_list arg_list;
+    va_start(arg_list, 1);
+
+    // Create a shape info that holds the given type and data.
+    ShapeInfo shape;
+    shape.type = type;
+    switch (type)
+    {
+        case VECTOR2:
+            shape.data.vector = va_arg(arg_list, MyVector2);
+            break;
+        case SEGMENT:
+            shape.data.segment = va_arg(arg_list, MySegment);
+            break;
+        case TRIANGLE:
+            shape.data.triangle = va_arg(arg_list, MyTriangle);
+            break;
+        case RECTANGLE:
+            shape.data.rectangle = va_arg(arg_list, MyRectangle);
+            break;
+        case POLYGON:
+            shape.data.polygon = va_arg(arg_list, MyPolygon);
+            break;
+        case CIRCLE:
+            shape.data.circle = va_arg(arg_list, MyCircle);
+    }
+
+    return shape;
 }
 
 // ---------- VECTOR MATH FUNCTIONS ---------- //
@@ -399,16 +441,16 @@ static inline double distancePoints(MyVector2 p1, MyVector2 p2)
 // Rotates the given point around the given pivot point, by the given angle (in rad).
 static inline MyVector2 PointRotate(MyVector2 point, MyVector2 pivot, double angle)
 {
-    float s = sin(angle);
-    float c = cos(angle);
+    float sine   = sin(angle);
+    float cosine = cos(angle);
 
     // Translate the point back to the origin.
     point.x -= pivot.x;
     point.y -= pivot.y;
 
     // Rotate the point around the origin.
-    float xnew = point.x * c - point.y * s;
-    float ynew = point.x * s + point.y * c;
+    float xnew = point.x * cosine - point.y * sine;
+    float ynew = point.x * sine   + point.y * cosine;
 
     // Translate point back to the pivot.
     point.x = xnew + pivot.x;

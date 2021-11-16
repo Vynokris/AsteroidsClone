@@ -1,5 +1,6 @@
 #pragma once
 
+#include "define.h"
 #include "particle.h"
 #include "player.h"
 #include "bullet.h"

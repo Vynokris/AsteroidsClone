@@ -1,13 +1,17 @@
 #include "player.h"
 
-
 void player_init(Player* player)
 {
+    player->has_shot_this_beat = false;
     player->hp = 3;
-    player->invulnerable = 60 * 3;
+    player->invulnerable = 0;
+    player_invulnerability(player);
+    player->frames_till_next_beat = FRAMES_PER_BEAT / 8;
     player->rotation = -PI / 2;
+    player->scale = 1;
     player->pos = Vector2Create(GetMonitorWidth(0) / 2, GetMonitorHeight(0) / 2);
     player->velocity = Vector2Zero();
+    player_shape_update(player);
     particle_init(player->particles);
 }
 
@@ -29,6 +33,17 @@ void player_shoot(Player* player, Bullet* bullets)
 }
 
 
+void player_shape_update(Player* player)
+{
+    double rotation_cos = cos(player->rotation);
+    double rotation_sin = sin(player->rotation);
+    player->shape = ShapeInfoCreate(TRIANGLE, TriangleCreate(Vector2Create(player->pos.x + rotation_sin * 20 * player->scale, player->pos.y - rotation_cos * 20 * player->scale),
+                                                             Vector2Create(player->pos.x - rotation_sin * 20 * player->scale, player->pos.y + rotation_cos * 20 * player->scale),
+                                                             Vector2Create(player->pos.x + rotation_cos * 40 * player->scale, player->pos.y + rotation_sin * 40 * player->scale)));
+}
+
+
+
 void player_update(Player* player, Bullet* bullets)
 {
     // Add velocity if the player is pressing the up arrow.
@@ -45,7 +60,7 @@ void player_update(Player* player, Bullet* bullets)
         }
 
         // Spawn particles behind him, only if he is visible.
-        if ((player->invulnerable / 10) % 2 == 0) {
+        if (!player->invulnerable || player->scale > 1.06) {
             particle_spawn(player->particles, 
                            Vector2Add(player->pos, Vector2FromAngle(player->rotation + (GetRandomValue(0, 1) ? PI/2 : -PI/2), 
                                                                     GetRandomValue(0, 10))), 
@@ -99,9 +114,11 @@ void player_update(Player* player, Bullet* bullets)
     }
 
     // Shoot.
-    if (IsKeyPressed(KEY_SPACE) ||
-       (IsGamepadAvailable(0) && IsGamepadButtonPressed(0, 12))) {
+    if (!player->has_shot_this_beat &&
+        (player->frames_till_next_beat <= 10 || player->frames_till_next_beat >= FRAMES_PER_BEAT - 10) &&
+        (IsKeyPressed(KEY_SPACE) || (IsGamepadAvailable(0) && IsGamepadButtonPressed(0, 12)))) {
         player_shoot(player, bullets);
+        player->has_shot_this_beat = true;
     }
 
     // Move according to velocity.
@@ -122,17 +139,31 @@ void player_update(Player* player, Bullet* bullets)
         player->pos.y = 0 - 10;
     }
 
+    // Update the player's shape.
+    player_shape_update(player);
+
     // Decrement the player's invulnerability.
     if (player->invulnerable) {
         player->invulnerable--;
+    }
+
+    // Update the player's scale to the beat.
+    static int frame_counter = 0;
+    player->scale = get_beat_scale(&frame_counter, 1.15);
+
+    // Update the number of frames until the next beat.
+    player->frames_till_next_beat--;
+    if (player->frames_till_next_beat < 0) {
+        player->frames_till_next_beat = FRAMES_PER_BEAT;
+        player->has_shot_this_beat = false;
     }
 }
 
 
 void player_invulnerability(Player* player)
 {
-    // Give the player 3 seconds of invulnerability.
-    player->invulnerable = 60 * 3;
+    // Give the player 3 beats of invulnerability.
+    player->invulnerable = FRAMES_PER_BEAT * 5.7;
 }
 
 
@@ -155,14 +186,9 @@ void player_respawn(Player* player)
 
 void player_draw(Player* player)
 {
-    if ((player->invulnerable / 10) % 2 == 0) 
+    if (!player->invulnerable || player->scale > 1.06) 
     {
-        Vector2 points[3] = 
-        {
-            { player->pos.x + sin(player->rotation) * 20, player->pos.y - cos(player->rotation) * 20 },
-            { player->pos.x - sin(player->rotation) * 20, player->pos.y + cos(player->rotation) * 20 },
-            { player->pos.x + cos(player->rotation) * 40, player->pos.y + sin(player->rotation) * 40 },
-        };
+        Vector2 points[3] = { toRayVec(player->shape.data.triangle.a), toRayVec(player->shape.data.triangle.b), toRayVec(player->shape.data.triangle.c) };
         DrawTriangle(points[0], points[1], points[2], BLACK);
         DrawTriangleLines(points[0], points[1], points[2], WHITE);
     }

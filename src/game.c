@@ -195,10 +195,7 @@ void game_render(Game* game)
         ClearBackground((Color){ 0, 0, 0, 0 });
 
         // Draw the asteroids' particles.
-        particle_draw(game->asteroid_particles);
-
-        // Draw the player's particles.
-        particle_draw(game->player.particles);
+        particle_draw_all(2, game->asteroid_particles, game->player.particles);
 
         // Draw the asteroids.
         asteroid_draw(game->asteroids);

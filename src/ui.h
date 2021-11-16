@@ -2,6 +2,8 @@
 
 #include <raylib.h>
 
+#include "define.h"
+
 
 typedef struct Ui {
     // Ui text sizes.
@@ -18,7 +20,7 @@ typedef struct Ui {
 
     // The ui's rendertexture.
     double scale;
-    double rotation;
+    double beat_scale;
     RenderTexture2D rendertexture;
 } Ui;
 
