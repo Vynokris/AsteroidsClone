@@ -8,6 +8,7 @@ void bullet_init(Bullet* bullets)
         bullets[i].pos = Vector2Zero();
         bullets[i].rotation = 0;
         bullets[i].lifespan = 0;
+        bullets[i].powerful = false;
     }
 }
 
@@ -19,7 +20,7 @@ void bullet_update(Bullet* bullets, int* multiplier)
             bullets[i].pos.y += sinf(bullets[i].rotation) * BULLET_SPEED;
             bullets[i].lifespan--;
         }
-        if (bullets[i].lifespan == 1) {
+        if (bullets[i].lifespan == 1 && !bullets[i].powerful) {
             *multiplier = 1;
             bullets[i].lifespan = 0;
         }
@@ -45,7 +46,10 @@ void bullet_draw(Bullet* bullets)
 {
     for (int i = 0; i < BULLET_MAX_AMOUNT; i++) {
         if (bullets[i].lifespan > 0) {
-            DrawCircle(bullets[i].pos.x, bullets[i].pos.y, 2, WHITE);
+            if (!bullets[i].powerful)
+                DrawCircle(bullets[i].pos.x, bullets[i].pos.y, 2, WHITE);
+            else
+                DrawCircle(bullets[i].pos.x, bullets[i].pos.y, 2, GOLD);
         }
     }
 }

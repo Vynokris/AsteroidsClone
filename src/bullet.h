@@ -8,6 +8,7 @@
 
 // Structure for a bullet.
 typedef struct Bullet {
+    bool powerful;
     int lifespan;
     float rotation;
     MyVector2 pos;

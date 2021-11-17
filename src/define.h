@@ -28,24 +28,24 @@
 
 // Returns a value between 1 and 1.05 that corresponds to beat scaling at the current frame index.
 // This function updates the given frame index.
-static inline double get_beat_scale(int* frame_i, double max_scale)
+static inline double get_beat_scale(int* frame_i, double max_scale, int num_beats)
 {
     double output;
 
-    // Reset the frames counter when it is too high.
-    if (*frame_i > FRAMES_PER_BEAT) { 
-        *frame_i = 0; 
-    }
-
     // Make the ui scale to the bpm.
     if (*frame_i <= FRAMES_PER_BEAT / 8) {
-        output = remap(*frame_i, 0, FRAMES_PER_BEAT / 4, 1, max_scale);
+        output = remap(*frame_i, 0, FRAMES_PER_BEAT / 8, 1, max_scale);
     }
     else {
-        output = remap(*frame_i, FRAMES_PER_BEAT / 4, FRAMES_PER_BEAT - 1, max_scale, 1);
+        output = remap(*frame_i, FRAMES_PER_BEAT / 8, FRAMES_PER_BEAT * num_beats - 1, max_scale, 1);
     }
 
     (*frame_i)++;
+
+    // Reset the frames counter when it is too high.
+    if (*frame_i >= FRAMES_PER_BEAT * num_beats) { 
+        *frame_i = 0; 
+    }
 
     return output;
 }

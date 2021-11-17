@@ -183,7 +183,7 @@ void debug_keys(Game* game)
 
         // Invulnerability key.
         if (IsKeyPressed(KEY_KP_MULTIPLY))
-            game->player.invulnerable += 60 * 5;
+            game->player.invulnerable += FRAMES_PER_BEAT * 6;
     }
 }
 

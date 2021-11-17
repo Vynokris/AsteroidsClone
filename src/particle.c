@@ -113,7 +113,7 @@ void particle_draw_all(int array_amount, ...)
 {
     // Get the beat scale.
     static int frame_counter = 0;
-    double beat_scale = get_beat_scale(&frame_counter, 3);
+    double beat_scale = get_beat_scale(&frame_counter, 3, 1);
 
     // Initialize the argument list with the given array amount.
     va_list arg_list;

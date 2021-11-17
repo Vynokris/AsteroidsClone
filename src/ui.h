@@ -19,8 +19,8 @@ typedef struct Ui {
     float restart_size;
 
     // The ui's rendertexture.
-    double scale;
     double beat_scale;
+    double offbeat_scale;
     RenderTexture2D rendertexture;
 } Ui;
 

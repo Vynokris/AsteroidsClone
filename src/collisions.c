@@ -13,10 +13,11 @@ bool player_collision(Player* player, Asteroid* asteroids, int* multiplier)
                 // Create a shape for the asteroid.
                 ShapeInfo asteroid_shape;
                 asteroid_shape.type = POLYGON;
-                asteroid_shape.data.polygon = PolygonCreate(asteroids[i].pos, asteroids[i].size, asteroids[i].rotation, asteroids[i].sides);
+                asteroid_shape.data.polygon = PolygonCreate(asteroids[i].pos, asteroids[i].size * asteroids[i].scale, asteroids[i].rotation, asteroids[i].sides);
 
                 // Check collision between it and the player.
-                if (collisionSAT(player->shape, asteroid_shape)) {
+                if (collisionSAT(player->shape, asteroid_shape)) 
+                {
                     // Spawn death particles.
                     for (int j = 0; j < 3; j++)
                     {
@@ -28,7 +29,8 @@ bool player_collision(Player* player, Asteroid* asteroids, int* multiplier)
                                        6, 8, 
                                        PARTICLE_LINES_FILLED, (Vector3){ 255, 255, 255 });
                     }
-                    
+
+                    // Respawn the player and reset his multiplier.
                     player_respawn(player);
                     *multiplier = 1;
                     player->hp--;

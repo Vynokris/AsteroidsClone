@@ -6,7 +6,6 @@ void player_init(Player* player)
     player->hp = 3;
     player->invulnerable = 0;
     player_invulnerability(player);
-    player->frames_till_next_beat = FRAMES_PER_BEAT / 8;
     player->rotation = -PI / 2;
     player->scale = 1;
     player->pos = Vector2Create(GetMonitorWidth(0) / 2, GetMonitorHeight(0) / 2);
@@ -16,7 +15,7 @@ void player_init(Player* player)
 }
 
 
-void player_shoot(Player* player, Bullet* bullets)
+void player_shoot(Player* player, Bullet* bullets, bool powerful)
 {
     if (player->hp > 0) {
         // Add a bullet if there are some bullets that still haven't been fired.
@@ -26,6 +25,7 @@ void player_shoot(Player* player, Bullet* bullets)
                 bullets[i].pos.y = player->pos.y + sinf(player->rotation) * 40;
                 bullets[i].rotation = player->rotation;
                 bullets[i].lifespan = BULLET_LIFESPAN;
+                bullets[i].powerful = powerful;
                 break;
             }
         }
@@ -115,9 +115,9 @@ void player_update(Player* player, Bullet* bullets)
 
     // Shoot.
     if (!player->has_shot_this_beat &&
-        (player->frames_till_next_beat <= 10 || player->frames_till_next_beat >= FRAMES_PER_BEAT - 10) &&
-        (IsKeyPressed(KEY_SPACE) || (IsGamepadAvailable(0) && IsGamepadButtonPressed(0, 12)))) {
-        player_shoot(player, bullets);
+        (IsKeyPressed(KEY_SPACE) || (IsGamepadAvailable(0) && IsGamepadButtonPressed(0, 12)))) 
+    {
+        player_shoot(player, bullets, player->scale >= 1.08);
         player->has_shot_this_beat = true;
     }
 
@@ -149,12 +149,10 @@ void player_update(Player* player, Bullet* bullets)
 
     // Update the player's scale to the beat.
     static int frame_counter = 0;
-    player->scale = get_beat_scale(&frame_counter, 1.15);
+    player->scale = get_beat_scale(&frame_counter, 1.15, 1);
 
     // Update the number of frames until the next beat.
-    player->frames_till_next_beat--;
-    if (player->frames_till_next_beat < 0) {
-        player->frames_till_next_beat = FRAMES_PER_BEAT;
+    if (frame_counter == 0) {
         player->has_shot_this_beat = false;
     }
 }
@@ -190,6 +188,9 @@ void player_draw(Player* player)
     {
         Vector2 points[3] = { toRayVec(player->shape.data.triangle.a), toRayVec(player->shape.data.triangle.b), toRayVec(player->shape.data.triangle.c) };
         DrawTriangle(points[0], points[1], points[2], BLACK);
-        DrawTriangleLines(points[0], points[1], points[2], WHITE);
+        if (player->scale >= 1.08)
+            DrawTriangleLines(points[0], points[1], points[2], GOLD);
+        else
+            DrawTriangleLines(points[0], points[1], points[2], WHITE);
     }
 }

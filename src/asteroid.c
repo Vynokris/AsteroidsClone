@@ -110,7 +110,7 @@ void asteroid_update(Asteroid* asteroids)
 {
     // Update the player's scale to the beat.
     static int frame_counter = 0;
-    double beat_scale = get_beat_scale(&frame_counter, 1.15);
+    double beat_scale = get_beat_scale(&frame_counter, 1.15, 1);
 
     for (int i = 0; i < ASTEROID_MAX_AMOUNT; i++) {
         if (asteroids[i].type != A_DESTROYED) 
@@ -185,10 +185,6 @@ void asteroid_break(Asteroid* asteroids, int break_i)
 
 void asteroid_draw(Asteroid* asteroids)
 {
-    // Get the beat scale.
-    static int frame_counter = 0;
-    double beat_scale = get_beat_scale(&frame_counter, 1.05);
-
     for (int i = 0; i < ASTEROID_MAX_AMOUNT; i++) {
         if (asteroids[i].type != A_DESTROYED) {
             // Sraw the asteroid interior.
@@ -199,7 +195,7 @@ void asteroid_draw(Asteroid* asteroids)
             DrawText(TextFormat("%d", i+1), 
                      asteroids[i].pos.x - MeasureText(TextFormat("%d", i+1), 20) / 2, 
                      asteroids[i].pos.y - MeasureText(TextFormat("%d", i+1), 20) / 2, 
-                     20 * beat_scale, WHITE);
+                     20 * asteroids[i].scale, WHITE);
         }
     }
 }

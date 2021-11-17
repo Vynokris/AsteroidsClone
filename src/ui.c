@@ -15,55 +15,30 @@ void ui_init(Ui* ui)
     ui->highscore_size = 50;
     ui->restart_size = 30;
 
+    // Rhythm scale.
+    ui->beat_scale = 1;
+    ui->offbeat_scale = 1;
+
     // Load the ui's rendertexture.
     ui->rendertexture = LoadRenderTexture(GetMonitorWidth(0), GetMonitorHeight(0));
     SetTextureFilter(ui->rendertexture.texture, TEXTURE_FILTER_BILINEAR);
-    ui->scale = 1;
 }
 
 
 void ui_update(Game* game)
 {
+    // ----- SCALE THE UI TO BEAT TO A BPM ----- //
+
     // Get the ui.
     Ui* ui = &game->ui;
 
-
-    // ----- SCALE THE UI UPON SCORE GAIN ----- //
-
-    // Player's score from the last frames.
-    static int player_score = 0;
-
-    // Remaining amount of frames for ui scaling due to score gain.
-    static int score_scale_frames = 0;
-
-    // Update the ui scale when the player gets score.
-    if (game->score != player_score)
-    {
-        score_scale_frames = 40;
-        player_score = game->score;
-    }
-
-    // Scale the ui during the score scaling frames.
-    if (score_scale_frames > 30) {
-        ui->scale = remap(score_scale_frames, 40, 30, 1, 1.1);
-    }
-    else if (score_scale_frames > 0) {
-        ui->scale = remap(score_scale_frames, 30, 1, 1.1, 1);
-    }
-
-    // Decrement the remaining scaling frames.
-    if (score_scale_frames > 0) {
-        score_scale_frames--;
-    }
-
-
-    // ----- SCALE THE UI TO BEAT TO A BPM ----- //
-
     // Frames counter.
+    static int frame_offbeat_counter = FRAMES_PER_BEAT;
     static int frame_counter = 0;
 
     // Get the beat scale.
-    ui->beat_scale = get_beat_scale(&frame_counter, 1.05);
+    ui->offbeat_scale = get_beat_scale(&frame_offbeat_counter, 1.05, 2);
+    ui->beat_scale    = get_beat_scale(&frame_counter,         1.05, 1);
 }
 
 
