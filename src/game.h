@@ -15,6 +15,8 @@
 typedef struct Game {
     bool game_over_trigger;
     bool show_debug_keys;
+    int current_beat;
+    int frames_till_beat;
     int score;
     int multiplier;
     int asteroid_spawn_speed;

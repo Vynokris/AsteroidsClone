@@ -32,13 +32,9 @@ void ui_update(Game* game)
     // Get the ui.
     Ui* ui = &game->ui;
 
-    // Frames counter.
-    static int frame_offbeat_counter = FRAMES_PER_BEAT;
-    static int frame_counter = 0;
-
     // Get the beat scale.
-    ui->offbeat_scale = get_beat_scale(&frame_offbeat_counter, 1.05, 2);
-    ui->beat_scale    = get_beat_scale(&frame_counter,         1.05, 1);
+    ui->offbeat_scale = get_beat_scale(game->frames_till_beat + FRAMES_PER_BEAT * (game->current_beat % 2 + 1), 1.07, 2);
+    ui->beat_scale    = get_beat_scale(game->frames_till_beat,                                                  1.05, 1);
 }
 
 
@@ -98,13 +94,13 @@ void ui_render(Game* game)
                     Vector2 points[3] = 
                     {
                         { (triangle_offset.x + (i * (ui->life_size + 8))) + sinf(-PI/2) * ui->life_size / 2, 
-                        triangle_offset.y - cosf(-PI/2) * ui->life_size / 2 },
+                           triangle_offset.y - cosf(-PI/2) * ui->life_size / 2 },
 
                         { (triangle_offset.x + (i * (ui->life_size + 8))) - sinf(-PI/2) * ui->life_size / 2, 
-                        triangle_offset.y + cosf(-PI/2) * ui->life_size / 2 },
+                           triangle_offset.y + cosf(-PI/2) * ui->life_size / 2 },
 
                         { (triangle_offset.x + (i * (ui->life_size + 8))) + cosf(-PI/2) * ui->life_size, 
-                        triangle_offset.y + sinf(-PI/2) * ui->life_size },
+                           triangle_offset.y + sinf(-PI/2) * ui->life_size },
                     };
                     DrawTriangleLines(points[0], points[1], points[2], GRAY);
                 }

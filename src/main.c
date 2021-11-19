@@ -28,7 +28,7 @@ int main(void)
     game_init(&game);
 
     // Set the window's fps.
-    SetTargetFPS(60);
+    SetTargetFPS(FPS);
 
 
     // ----- GAME LOOP ----- //
@@ -50,7 +50,7 @@ int main(void)
         {
             ClearBackground(BLACK);
 
-            // The render texture must be y-flipped due to default OpenGL coordinates (left-bottom).
+            // The render textures must be y-flipped due to default OpenGL coordinates (left-bottom).
             DrawTexturePro(game.ui.rendertexture.texture, 
                           (Rectangle){ 0.0f, 0.0f, (float)game.ui.rendertexture.texture.width, (float)-game.ui.rendertexture.texture.height },
                           (Rectangle){ (GetScreenWidth()  - ((float)GetScreenWidth()  * (game.ui.offbeat_scale * game.ui.beat_scale))) * 0.5, 
@@ -60,9 +60,10 @@ int main(void)
                           (Vector2){ 0, 0 }, 
                           0, 
                           WHITE);
-
-            // DrawTextureRec(game.ui.rendertexture.texture, (Rectangle){ 0, 0, screenWidth, -screenHeight }, (Vector2){ game.screen_offset[0], game.screen_offset[1] }, WHITE);
             DrawTextureRec(game.   rendertexture.texture, (Rectangle){ 0, 0, screenWidth, -screenHeight }, (Vector2){ game.screen_offset[0], game.screen_offset[1] }, WHITE);
+
+            //! Debug.
+            DrawText(TextFormat("Current beat:    %d\nFrames till beat: %d", game.current_beat, game.frames_till_beat), 10, 10, 20, WHITE);
         }
         EndDrawing();
     }

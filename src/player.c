@@ -44,7 +44,7 @@ void player_shape_update(Player* player)
 
 
 
-void player_update(Player* player, Bullet* bullets)
+void player_update(Player* player, Bullet* bullets, int frames_till_beat)
 {
     // Add velocity if the player is pressing the up arrow.
     if (IsKeyDown(KEY_UP)) {
@@ -70,7 +70,7 @@ void player_update(Player* player, Bullet* bullets)
                            2,
                            15,
                            PARTICLE_LINES_FILLED,
-                           (Vector3){ 200, 200, 200 });
+                           (player->scale >= 1.08 ? (Vector3){ GOLD.r, GOLD.g, GOLD.b } : (Vector3){ 200, 200, 200 }));
         }
     }
 
@@ -148,11 +148,10 @@ void player_update(Player* player, Bullet* bullets)
     }
 
     // Update the player's scale to the beat.
-    static int frame_counter = 0;
-    player->scale = get_beat_scale(&frame_counter, 1.15, 1);
+    player->scale = get_beat_scale(frames_till_beat, 1.15, 1);
 
     // Update the number of frames until the next beat.
-    if (frame_counter == 0) {
+    if (frames_till_beat == 0) {
         player->has_shot_this_beat = false;
     }
 }

@@ -44,7 +44,7 @@ void spawn_asteroid(Asteroid* asteroids)
 
 
     // ----- SIZE & NUMBER OF SIDES ----- //
-    asteroids[a_spwn].size = GetRandomValue(ASTEROID_SIZE(asteroids[a_spwn].type) - 5, ASTEROID_SIZE(asteroids[a_spwn].type) + 5);
+    asteroids[a_spwn].size  = GetRandomValue(ASTEROID_SIZE(asteroids[a_spwn].type)  - 5, ASTEROID_SIZE(asteroids[a_spwn].type) + 5);
     asteroids[a_spwn].sides = GetRandomValue(ASTEROID_SIDES(asteroids[a_spwn].type) - 1, ASTEROID_SIDES(asteroids[a_spwn].type));
 
 
@@ -106,11 +106,10 @@ void spawn_asteroid(Asteroid* asteroids)
 }
 
 
-void asteroid_update(Asteroid* asteroids)
+void asteroid_update(Asteroid* asteroids, int frames_till_beat)
 {
     // Update the player's scale to the beat.
-    static int frame_counter = 0;
-    double beat_scale = get_beat_scale(&frame_counter, 1.15, 1);
+    double beat_scale = get_beat_scale(frames_till_beat, 1.15, 1);
 
     for (int i = 0; i < ASTEROID_MAX_AMOUNT; i++) {
         if (asteroids[i].type != A_DESTROYED) 
@@ -120,8 +119,10 @@ void asteroid_update(Asteroid* asteroids)
             asteroids[i].pos.y += asteroids[i].velocity.y * ASTEROID_SPEED(asteroids[i].type);
             asteroids[i].rotation += asteroids[i].rotation_speed;
             asteroids[i].scale = beat_scale;
+            /*
             if (beat_scale >= 1.14)
-                asteroids[i].rotation += PI / 50;
+                asteroids[i].rotation += PI / 40;
+            */
 
             // ----- SCREEN WRAPPING ----- //
             if (asteroids[i].pos.x + asteroids[i].size + 5 < 0) {
