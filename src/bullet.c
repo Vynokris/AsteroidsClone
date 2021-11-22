@@ -49,7 +49,7 @@ void bullet_draw(Bullet* bullets)
             if (!bullets[i].powerful)
                 DrawCircle(bullets[i].pos.x, bullets[i].pos.y, 2, WHITE);
             else
-                DrawCircle(bullets[i].pos.x, bullets[i].pos.y, 2, GOLD);
+                DrawCircle(bullets[i].pos.x, bullets[i].pos.y, 2, BEAT_COLOR);
         }
     }
 }

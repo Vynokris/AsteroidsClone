@@ -25,7 +25,7 @@ int main(void)
 
     // Initialize the game structure.
     Game game;
-    game_init(&game);
+    game_init(&game, false);
 
     // Set the window's fps.
     SetTargetFPS(FPS);
@@ -61,9 +61,6 @@ int main(void)
                           0, 
                           WHITE);
             DrawTextureRec(game.   rendertexture.texture, (Rectangle){ 0, 0, screenWidth, -screenHeight }, (Vector2){ game.screen_offset[0], game.screen_offset[1] }, WHITE);
-
-            //! Debug.
-            DrawText(TextFormat("Current beat:    %d\nFrames till beat: %d", game.current_beat, game.frames_till_beat), 10, 10, 20, WHITE);
         }
         EndDrawing();
     }

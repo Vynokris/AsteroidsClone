@@ -1,7 +1,7 @@
 OBJS=src/main.o src/game.o src/particle.o src/player.o src/bullet.o src/asteroid.o src/collisions.o src/ui.o
 PROGRAM=main
 
-CFLAGS=-O0 -g -Wvarargs
+CFLAGS=-O0 -g -Wno-varargs
 CPPFLAGS=-MMD -Iexternals/include
 LDLIBS=-lraylib -lm -ldl -lpthread
 LDFLAGS=-Lexternals/libs

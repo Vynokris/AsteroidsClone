@@ -33,7 +33,7 @@ void screen_shake(Game* game, bool start_shake, int duration_multiplier, int new
 
 
 
-void game_init(Game* game)
+void game_init(Game* game, bool reset_rhythm)
 {
     // Set the game over trigger to false.
     game->game_over_trigger = false;
@@ -41,14 +41,17 @@ void game_init(Game* game)
     // Don't show the debug keys.
     game->show_debug_keys = false;
 
-    // Initialize the current beat value.
-    game->current_beat = 0;
+    if (reset_rhythm)
+    {
+        // Initialize the current beat value.
+        game->current_beat = 0;
 
-    // Initialize the number of frames intil the next beat.
-    game->frames_till_beat = 0;
+        // Initialize the number of frames intil the next beat.
+        game->frames_till_beat = 0;
+    }
 
     // Set the starting time of the game.
-    game->start_time = time(NULL);
+    game->start_time = 0;
 
     // Set the ending time of the game.
     game->end_time = 0;
@@ -102,55 +105,73 @@ void game_update(Game* game)
         game->current_beat++;
     }
 
-    // Update the asteroids.
-    asteroid_update(game->asteroids, game->frames_till_beat);
-
-    // Update the particles' particles.
-    particle_update(game->asteroid_particles);
-
-    // Update the player's particles.
-    particle_update(game->player.particles);
-
     // Update the ui.
     ui_update(game);
 
-    // Update the screen shake.
-    screen_shake(game, false, 1, 1);
+    // Start the game if space is pressed on the main menu.
+    if (game->start_time == 0) {
+        if (IsKeyPressed(KEY_SPACE)) {
+            game->start_time = time(NULL);
+        }
+    }
 
-    if (!is_game_over(game)) 
+    // Don't update the game on the main menu.
+    else
     {
-        // Spawn asteroids.
-        if (game->asteroid_spawn_delay <= 0) {
-            spawn_asteroid(game->asteroids);
-            game->asteroid_spawn_delay = GetRandomValue(200, 400);
+        // Update the asteroids.
+        asteroid_update(game->asteroids, game->frames_till_beat);
+
+        // Update the particles' particles.
+        particle_update(game->asteroid_particles);
+
+        // Update the player's particles.
+        particle_update(game->player.particles);
+
+        // Update the screen shake.
+        screen_shake(game, false, 1, 1);
+
+        if (!is_game_over(game)) 
+        {
+            // Spawn asteroids.
+            if (game->asteroid_spawn_delay <= 0) {
+                spawn_asteroid(game->asteroids);
+                game->asteroid_spawn_delay = GetRandomValue(200, 400);
+            }
+            game->asteroid_spawn_delay--;
+
+            // Update the player.
+            player_update(&game->player, game->bullets, game->frames_till_beat);
+
+            // Update the bullets.
+            bullet_update(game->bullets, &game->multiplier);
+
+            // Check for collisions and act accordingly.
+            if (player_collision(&game->player, game->asteroids, &game->multiplier)) {
+                screen_shake(game, true, 2, 2);
+            }
+            if (bullet_collision(game->bullets, game->asteroids, &game->score, &game->multiplier, game->asteroid_particles)) {
+                screen_shake(game, true, 1, 1);
+            }
         }
-        game->asteroid_spawn_delay--;
 
-        // Update the player.
-        player_update(&game->player, game->bullets, game->frames_till_beat);
-
-        // Update the bullets.
-        bullet_update(game->bullets, &game->multiplier);
-
-        // Check for collisions and act accordingly.
-        if (player_collision(&game->player, game->asteroids, &game->multiplier)) {
-            screen_shake(game, true, 2, 2);
+        // Stop the game timer upon game over.
+        else if (!game->game_over_trigger) {
+            game->end_time = time(NULL);
+            game_save_score(game);
+            SetExitKey(KEY_BACKSPACE);
+            game->game_over_trigger = true;
         }
-        if (bullet_collision(game->bullets, game->asteroids, &game->score, &game->multiplier, game->asteroid_particles)) {
-            screen_shake(game, true, 1, 1);
+
+        // While the game is over, check for keyboard input to restart.
+        else if (IsKeyPressed(KEY_ESCAPE)) {
+            game_init(game, false);
+            SetExitKey(KEY_ESCAPE);
         }
-    }
-
-    // Stop the game timer upon game over.
-    else if (!game->game_over_trigger) {
-        game->end_time = time(NULL);
-        game_save_score(game);
-        game->game_over_trigger = true;
-    }
-
-    // While the game is over, check for keyboard input to restart.
-    else if (GetKeyPressed()) {
-        game_init(game);
+        else if (IsKeyPressed(KEY_SPACE)) {
+            game_init(game, false);
+            game->start_time = time(NULL);
+            SetExitKey(KEY_ESCAPE);
+        }
     }
 }
 
@@ -224,7 +245,7 @@ void game_render(Game* game)
             // Show the debug keys.
             if (game->show_debug_keys) {
                 DrawText("[KP_ENTER]: Show this cheat menu\n[KP_0]: Kill player\n[KP_DECIMAL]: Give hp\n[KP_MULTIPLY]: Add 5s of invulnerability\n[KP_1]: Give score\n[KP_2]: Increment multiplier\n[KP_3]: Add game time\n[KP_ADD]: Spawn asteroid\n[KP_SUBSTRACT]: Clear highscores",
-                        10, 30, 20, GRAY);
+                        10, 10, 20, GRAY);
             }
         }
     }

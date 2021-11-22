@@ -191,12 +191,13 @@ void asteroid_draw(Asteroid* asteroids)
             // Sraw the asteroid interior.
             DrawPoly(toRayVec(asteroids[i].pos), asteroids[i].sides, asteroids[i].size * asteroids[i].scale, radToDeg(asteroids[i].rotation), BLACK);
             // Draw the asteroid exterior lines.
-            DrawPolyLines(toRayVec(asteroids[i].pos), asteroids[i].sides, asteroids[i].size * asteroids[i].scale, radToDeg(asteroids[i].rotation), WHITE);
+            DrawPolyLines(toRayVec(asteroids[i].pos), asteroids[i].sides, asteroids[i].size * asteroids[i].scale, radToDeg(asteroids[i].rotation),  (asteroids[i].scale > 1.08 ? BEAT_COLOR : WHITE));
             // Draw the asteroid number on it.
             DrawText(TextFormat("%d", i+1), 
                      asteroids[i].pos.x - MeasureText(TextFormat("%d", i+1), 20) / 2, 
                      asteroids[i].pos.y - MeasureText(TextFormat("%d", i+1), 20) / 2, 
-                     20 * asteroids[i].scale, WHITE);
+                     20 * asteroids[i].scale, 
+                     (asteroids[i].scale >= 1.08 ? BEAT_COLOR : WHITE));
         }
     }
 }

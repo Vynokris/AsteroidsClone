@@ -70,7 +70,7 @@ void player_update(Player* player, Bullet* bullets, int frames_till_beat)
                            2,
                            15,
                            PARTICLE_LINES_FILLED,
-                           (player->scale >= 1.08 ? (Vector3){ GOLD.r, GOLD.g, GOLD.b } : (Vector3){ 200, 200, 200 }));
+                           (player->scale >= 1.08 ? BEAT_COLOR : (Color){ 200, 200, 200, 255 }));
         }
     }
 
@@ -117,7 +117,7 @@ void player_update(Player* player, Bullet* bullets, int frames_till_beat)
     if (!player->has_shot_this_beat &&
         (IsKeyPressed(KEY_SPACE) || (IsGamepadAvailable(0) && IsGamepadButtonPressed(0, 12)))) 
     {
-        player_shoot(player, bullets, player->scale >= 1.08);
+        player_shoot(player, bullets, frames_till_beat <= 7 || frames_till_beat >= FRAMES_PER_BEAT - 7);
         player->has_shot_this_beat = true;
     }
 
@@ -151,7 +151,7 @@ void player_update(Player* player, Bullet* bullets, int frames_till_beat)
     player->scale = get_beat_scale(frames_till_beat, 1.15, 1);
 
     // Update the number of frames until the next beat.
-    if (frames_till_beat == 0) {
+    if (frames_till_beat == FRAMES_PER_BEAT - 8) {
         player->has_shot_this_beat = false;
     }
 }
@@ -188,7 +188,7 @@ void player_draw(Player* player)
         Vector2 points[3] = { toRayVec(player->shape.data.triangle.a), toRayVec(player->shape.data.triangle.b), toRayVec(player->shape.data.triangle.c) };
         DrawTriangle(points[0], points[1], points[2], BLACK);
         if (player->scale >= 1.08)
-            DrawTriangleLines(points[0], points[1], points[2], GOLD);
+            DrawTriangleLines(points[0], points[1], points[2], BEAT_COLOR);
         else
             DrawTriangleLines(points[0], points[1], points[2], WHITE);
     }

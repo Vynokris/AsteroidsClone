@@ -38,5 +38,11 @@ void ui_update(Game* game);
 // Render the game ui: score, multiplier, lives and bullets.
 void ui_render(Game* game);
 
+// Show the main menu screen.
+void main_menu_screen(Game* game);
+
+// Show the in game ui.
+void in_game_ui(Game* game);
+
 // Show the game over screen.
 void game_over_screen(Game* game);

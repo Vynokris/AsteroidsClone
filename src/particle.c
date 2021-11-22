@@ -17,12 +17,12 @@ void particle_init(Particle* particles)
         particles[i].max_size = 0;
         particles[i].pos = Vector2Zero();
         particles[i].velocity = Vector2Zero();
-        particles[i].color = (Vector3){ 0, 0, 0 };
+        particles[i].color = WHITE;
     }
 }
 
 // Spawns a particle at the given position, with the given initial velocity and new velocity.
-void particle_spawn(Particle* particles, MyVector2 pos, MyVector2 velocity, int max_lifespan, int sides, double min_size, double max_size, ParticleStyle style, Vector3 color)
+void particle_spawn(Particle* particles, MyVector2 pos, MyVector2 velocity, int max_lifespan, int sides, double min_size, double max_size, ParticleStyle style, Color color)
 {
     for (int i = 0; i < PARTICLE_MAX_AMOUNT; i++)
     {
@@ -70,9 +70,9 @@ void particle_draw(Particle* particles, double scale)
                         particles[i].sides, 
                         remap(particles[i].lifespan, particles[i].max_lifespan, 0, particles[i].min_size, particles[i].max_size) * scale, 
                         radToDeg(particles[i].rotation), 
-                        (Color){ particles[i].color.x, 
-                                 particles[i].color.y, 
-                                 particles[i].color.z, 
+                        (Color){ particles[i].color.r, 
+                                 particles[i].color.g, 
+                                 particles[i].color.b, 
                                  remap(particles[i].lifespan, particles[i].max_lifespan, 0, 255, 0) });
             }
 
@@ -82,9 +82,9 @@ void particle_draw(Particle* particles, double scale)
                               particles[i].sides, 
                               remap(particles[i].lifespan, particles[i].max_lifespan, 0, particles[i].min_size, particles[i].max_size) * scale, 
                               radToDeg(particles[i].rotation), 
-                              (Color){ particles[i].color.x, 
-                                       particles[i].color.y, 
-                                       particles[i].color.z, 
+                              (Color){ particles[i].color.r, 
+                                       particles[i].color.g, 
+                                       particles[i].color.b, 
                                        remap(particles[i].lifespan, particles[i].max_lifespan, 0, 255, 0) });
             }
 
@@ -99,9 +99,9 @@ void particle_draw(Particle* particles, double scale)
                               particles[i].sides, 
                               remap(particles[i].lifespan, particles[i].max_lifespan, 0, particles[i].min_size, particles[i].max_size) * scale, 
                               radToDeg(particles[i].rotation), 
-                              (Color){ particles[i].color.x, 
-                                       particles[i].color.y, 
-                                       particles[i].color.z, 
+                              (Color){ particles[i].color.r, 
+                                       particles[i].color.g, 
+                                       particles[i].color.b, 
                                        remap(particles[i].lifespan, particles[i].max_lifespan, 0, 255, 0) });
             }
         }

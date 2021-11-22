@@ -42,7 +42,7 @@ void screen_shake(Game* game, bool start_shake, int duration_multiplier, int new
 
 
 // Initializes all game values and objects.
-void game_init(Game* game);
+void game_init(Game* game, bool reset_rhythm);
 
 // Update all the game objects.
 void game_update(Game* game);

@@ -27,7 +27,8 @@ bool player_collision(Player* player, Asteroid* asteroids, int* multiplier)
                                        120, 
                                        GetRandomValue(3, 7), 
                                        6, 8, 
-                                       PARTICLE_LINES_FILLED, (Vector3){ 255, 255, 255 });
+                                       PARTICLE_LINES_FILLED, 
+                                       (player->scale >= 1.08 ? BEAT_COLOR : WHITE));
                     }
 
                     // Respawn the player and reset his multiplier.
@@ -77,13 +78,14 @@ bool bullet_collision(Bullet* bullets, Asteroid* asteroids, int* score, int* mul
                                                120, 
                                                GetRandomValue(3, 7), 
                                                4, 6, 
-                                               PARTICLE_LINES_FILLED, (Vector3){ 255, 255, 255 });
+                                               PARTICLE_LINES_FILLED, 
+                                               (bullets[i].powerful ? BEAT_COLOR : WHITE));
                             }
                         }
 
                         // Break the asteroid and the bullet.
                         asteroid_break(asteroids, j);
-                        *score += (j+1) * (*multiplier);
+                        *score += (j+1) * (*multiplier) * (bullets[i].powerful + 1);
                         (*multiplier)++;
                         bullets[i].lifespan = 0;
                         collision = true;

@@ -25,7 +25,7 @@ typedef struct Particle {
     double max_size;
     MyVector2 pos;
     MyVector2 velocity;
-    Vector3 color;
+    Color color;
 } Particle;
 
 
@@ -33,7 +33,7 @@ typedef struct Particle {
 void particle_init(Particle* particles);
 
 // Spawns a particle at the given position, with the given initial velocity and new velocity.
-void particle_spawn(Particle* particles, MyVector2 pos, MyVector2 velocity, int max_lifespan, int sides, double min_size, double max_size, ParticleStyle style, Vector3 color);
+void particle_spawn(Particle* particles, MyVector2 pos, MyVector2 velocity, int max_lifespan, int sides, double min_size, double max_size, ParticleStyle style, Color color);
 
 // Updates all the given particles.
 void particle_update(Particle* particles);
