@@ -34,7 +34,7 @@ void player_shoot(Player* player, Bullet* bullets, bool powerful);
 void player_shape_update(Player* player);
 
 // Updates the player's position.
-void player_update(Player* player, Bullet* bullets, int frames_till_beat);
+void player_update(Player* player, Bullet* bullets);
 
 // Makes the player invulnerable for a few seconds.
 void player_invulnerability(Player* player);

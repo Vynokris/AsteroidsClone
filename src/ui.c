@@ -33,8 +33,8 @@ void ui_update(Game* game)
     Ui* ui = &game->ui;
 
     // Get the beat scale.
-    ui->beat_scale    = get_beat_scale(game->frames_till_beat + FRAMES_PER_BEAT * ((game->current_beat % 2 + 1) % 2),                                                  1.05,         2);
-    ui->offbeat_scale = get_beat_scale(game->frames_till_beat + FRAMES_PER_BEAT * (game->current_beat  % 2),          (game->start_time == 0 || game->player.hp <= 0 ? 1.05 : 1.15), 2);
+    ui->beat_scale    = get_beat_scale_ms(1.05, 2, 0);
+    ui->offbeat_scale = get_beat_scale_ms(1.15, 2, 1);
 }
 
 

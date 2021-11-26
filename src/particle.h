@@ -42,4 +42,4 @@ void particle_update(Particle* particles);
 void particle_draw(Particle* particles, double scale);
 
 // Renders all the particles of all the given particle arrays.
-void particle_draw_all(int frames_till_beat, int array_amount, ...);
+void particle_draw_all(int array_amount, ...);

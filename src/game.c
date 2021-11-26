@@ -45,9 +45,6 @@ void game_init(Game* game, bool reset_rhythm)
     {
         // Initialize the current beat value.
         game->current_beat = 0;
-
-        // Initialize the number of frames intil the next beat.
-        game->frames_till_beat = 0;
     }
 
     // Set the starting time of the game.
@@ -98,13 +95,6 @@ void game_init(Game* game, bool reset_rhythm)
 
 void game_update(Game* game)
 {
-    // Update the beat variables.
-    game->frames_till_beat--;
-    if (game->frames_till_beat < 0) {
-        game->frames_till_beat = FRAMES_PER_BEAT;
-        game->current_beat++;
-    }
-
     // Update the ui.
     ui_update(game);
 
@@ -119,7 +109,7 @@ void game_update(Game* game)
     else
     {
         // Update the asteroids.
-        asteroid_update(game->asteroids, game->frames_till_beat);
+        asteroid_update(game->asteroids);
 
         // Update the particles' particles.
         particle_update(game->asteroid_particles);
@@ -140,7 +130,7 @@ void game_update(Game* game)
             game->asteroid_spawn_delay--;
 
             // Update the player.
-            player_update(&game->player, game->bullets, game->frames_till_beat);
+            player_update(&game->player, game->bullets);
 
             // Update the bullets.
             bullet_update(game->bullets, &game->multiplier);
@@ -217,7 +207,7 @@ void debug_keys(Game* game)
 
         // Invulnerability key.
         if (IsKeyPressed(KEY_KP_MULTIPLY))
-            game->player.invulnerable += FRAMES_PER_BEAT * 6;
+            game->player.invulnerable += BEATS_TO_FRAMES(8);
     }
 }
 
@@ -229,7 +219,7 @@ void game_render(Game* game)
         ClearBackground((Color){ 0, 0, 0, 0 });
 
         // Draw the asteroids' particles.
-        particle_draw_all(game->frames_till_beat, 2, game->asteroid_particles, game->player.particles);
+        particle_draw_all(2, game->asteroid_particles, game->player.particles);
 
         // Draw the asteroids.
         asteroid_draw(game->asteroids);

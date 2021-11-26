@@ -44,8 +44,11 @@ void player_shape_update(Player* player)
 
 
 
-void player_update(Player* player, Bullet* bullets, int frames_till_beat)
+void player_update(Player* player, Bullet* bullets)
 {
+    // Get the number of milliseconds since the last beat.
+    int time_since_beat = get_time_since_beat();
+
     // Add velocity if the player is pressing the up arrow.
     if (IsKeyDown(KEY_UP)) {
         // If the player isn't at max velocity, increment its velocity according to his rotation.
@@ -117,7 +120,7 @@ void player_update(Player* player, Bullet* bullets, int frames_till_beat)
     if (!player->has_shot_this_beat &&
         (IsKeyPressed(KEY_SPACE) || (IsGamepadAvailable(0) && IsGamepadButtonPressed(0, 12)))) 
     {
-        player_shoot(player, bullets, frames_till_beat <= 7 || frames_till_beat >= FRAMES_PER_BEAT - 7);
+        player_shoot(player, bullets, MS_PER_BEAT - 10 <= time_since_beat || time_since_beat <= 10);
         player->has_shot_this_beat = true;
     }
 
@@ -148,10 +151,10 @@ void player_update(Player* player, Bullet* bullets, int frames_till_beat)
     }
 
     // Update the player's scale to the beat.
-    player->scale = get_beat_scale(frames_till_beat, 1.15, 1);
+    player->scale = get_beat_scale_ms(1.15, 1, 0);
 
     // Update the number of frames until the next beat.
-    if (frames_till_beat == FRAMES_PER_BEAT - 8) {
+    if (10 <= time_since_beat && time_since_beat <= 15) {
         player->has_shot_this_beat = false;
     }
 }
@@ -160,7 +163,7 @@ void player_update(Player* player, Bullet* bullets, int frames_till_beat)
 void player_invulnerability(Player* player)
 {
     // Give the player 3 beats of invulnerability.
-    player->invulnerable = FRAMES_PER_BEAT * 5.7;
+    player->invulnerable = BEATS_TO_FRAMES(8);
 }
 
 

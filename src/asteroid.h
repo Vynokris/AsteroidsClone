@@ -38,7 +38,7 @@ void spawn_asteroid(Asteroid* asteroids);
 void asteroid_shape_update(Asteroid* asteroid);
 
 // Updates the position of all the asteroids in the given array.
-void asteroid_update(Asteroid* asteroids, int frames_till_beat);
+void asteroid_update(Asteroid* asteroids);
 
 // Breaks the given asteroid into two smaller ones.
 void asteroid_break(Asteroid* asteroids, int break_i);

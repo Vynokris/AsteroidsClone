@@ -106,10 +106,10 @@ void spawn_asteroid(Asteroid* asteroids)
 }
 
 
-void asteroid_update(Asteroid* asteroids, int frames_till_beat)
+void asteroid_update(Asteroid* asteroids)
 {
     // Update the player's scale to the beat.
-    double beat_scale = get_beat_scale(frames_till_beat, 1.15, 1);
+    double beat_scale = get_beat_scale_ms(1.15, 1, 0);
 
     for (int i = 0; i < ASTEROID_MAX_AMOUNT; i++) {
         if (asteroids[i].type != A_DESTROYED) 

@@ -109,10 +109,10 @@ void particle_draw(Particle* particles, double scale)
 }
 
 // Renders all the particles of all the given particle arrays.
-void particle_draw_all(int frames_till_beat, int array_amount, ...)
+void particle_draw_all(int array_amount, ...)
 {
     // Get the beat scale.
-    double beat_scale = get_beat_scale(frames_till_beat, 3, 1);
+    double beat_scale = get_beat_scale_ms(3, 1, 0);
 
     // Initialize the argument list with the given array amount.
     va_list arg_list;

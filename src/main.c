@@ -35,20 +35,23 @@ int main(void)
 
     while (!WindowShouldClose())
     {
-        game_update(&game);
-
-        debug_keys(&game);
-
-        // Renders the ui on the ui rendertexture.
-        ui_render(&game);
-
-        // Render the game objects on the game rendertexture.
-        game_render(&game);
 
         // Render the two rendertextures on screen.
         BeginDrawing();
         {
             ClearBackground(BLACK);
+
+            // Updates the game objects.
+            game_update(&game);
+            
+            // Checks if the debug keys were pressed.
+            debug_keys(&game);
+
+            // Renders the ui on the ui rendertexture.
+            ui_render(&game);
+
+            // Render the game objects on the game rendertexture.
+            game_render(&game);
 
             // The render textures must be y-flipped due to default OpenGL coordinates (left-bottom).
             DrawTexturePro(game.ui.rendertexture.texture, 
