@@ -86,7 +86,7 @@ void game_init(Game* game, bool reset_rhythm)
     }
 
     // Load the game's rendertexture.
-    game->rendertexture = LoadRenderTexture(GetMonitorWidth(0), GetMonitorHeight(0));
+    game->rendertexture = LoadRenderTexture(SCREEN_WIDTH, SCREEN_HEIGHT);
 
     // Initialize the game's ui.
     ui_init(&game->ui);

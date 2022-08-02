@@ -52,36 +52,36 @@ void spawn_asteroid(Asteroid* asteroids)
     // 50% chance to spawn on the top or bottom of the screen.
     if (GetRandomValue(0, 1)) 
     {
-        asteroids[a_spwn].pos.x = GetRandomValue(0, GetMonitorWidth(0));
+        asteroids[a_spwn].pos.x = GetRandomValue(0, SCREEN_WIDTH);
         // 50% chance to spawn in the top.
         if (GetRandomValue(0, 1)) {
             asteroids[a_spwn].pos.y = 0 - asteroids[a_spwn].size;
         }
         // 50 % chance to spawn in the bottom.
         else {
-            asteroids[a_spwn].pos.y = GetMonitorHeight(0) + asteroids[a_spwn].size;
+            asteroids[a_spwn].pos.y = SCREEN_HEIGHT + asteroids[a_spwn].size;
         }
     }
 
     // 50% chance to spawn on the right or left of the screen.
     else 
     {
-        asteroids[a_spwn].pos.y = GetRandomValue(0, GetMonitorHeight(0));
+        asteroids[a_spwn].pos.y = GetRandomValue(0, SCREEN_HEIGHT);
         // 50% chance to spawn on the left.
         if (GetRandomValue(0, 1)) {
             asteroids[a_spwn].pos.x = 0 - asteroids[a_spwn].size;
         }
         // 50 % chance to spawn on the right.
         else {
-            asteroids[a_spwn].pos.x = GetMonitorWidth(0) + asteroids[a_spwn].size;
+            asteroids[a_spwn].pos.x = SCREEN_WIDTH + asteroids[a_spwn].size;
         }
     }
 
 
     // ----- VELOCITY ----- //
     // Get a random point on screen for the asteroid to go towards.
-    MyVector2 rand_point = Vector2Create(GetRandomValue(GetMonitorWidth(0)  * 0.3, GetMonitorWidth(0)  * 0.7), 
-                                         GetRandomValue(GetMonitorHeight(0) * 0.3, GetMonitorHeight(0) * 0.7));
+    MyVector2 rand_point = Vector2Create(GetRandomValue(SCREEN_WIDTH  * 0.3, SCREEN_WIDTH  * 0.7), 
+                                         GetRandomValue(SCREEN_HEIGHT * 0.3, SCREEN_HEIGHT * 0.7));
 
     // Get a vector from the asteroid's position to the random point.
     MyVector2 rand_vector = Vector2Create(rand_point.x - asteroids[a_spwn].pos.x, rand_point.y - asteroids[a_spwn].pos.y);
@@ -126,15 +126,15 @@ void asteroid_update(Asteroid* asteroids)
 
             // ----- SCREEN WRAPPING ----- //
             if (asteroids[i].pos.x + asteroids[i].size + 5 < 0) {
-                asteroids[i].pos.x = GetMonitorWidth(0) + asteroids[i].size;
+                asteroids[i].pos.x = SCREEN_WIDTH + asteroids[i].size;
             }
-            else if (asteroids[i].pos.x - asteroids[i].size - 5 > GetMonitorWidth(0)) {
+            else if (asteroids[i].pos.x - asteroids[i].size - 5 > SCREEN_WIDTH) {
                 asteroids[i].pos.x = 0 - asteroids[i].size;
             }
             if (asteroids[i].pos.y + asteroids[i].size + 5 < 0) {
-                asteroids[i].pos.y = GetMonitorHeight(0) + asteroids[i].size;
+                asteroids[i].pos.y = SCREEN_HEIGHT + asteroids[i].size;
             }
-            else if (asteroids[i].pos.y - asteroids[i].size - 5 > GetMonitorHeight(0)) {
+            else if (asteroids[i].pos.y - asteroids[i].size - 5 > SCREEN_HEIGHT) {
                 asteroids[i].pos.y = 0 - asteroids[i].size;
             }
         }

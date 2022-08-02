@@ -1,22 +1,34 @@
-OBJS=src/main.o src/game.o src/particle.o src/player.o src/bullet.o src/asteroid.o src/collisions.o src/ui.o
-PROGRAM=main
+PROGRAM = asteroids
+OBJS    = src/main.o src/game.o src/particle.o src/player.o src/bullet.o src/asteroid.o src/collisions.o src/ui.o
 
-CFLAGS=-O0 -g -Wno-varargs
-CPPFLAGS=-MMD -Iexternals/include
-LDLIBS=-lraylib -lm -ldl -lpthread
-LDFLAGS=-Lexternals/libs
+CXX      = gcc
+CXXFLAGS = -O0 -g -lm -Wall -Wno-varargs -Wno-unused-parameter -Wno-unused-variable
+CPPFLAGS = -MMD -Iexternals/include
+
+ifeq ($(OS), Windows_NT)
+LDLIBS  = -lraylibdll
+LDFLAGS = -Lexternals/libs-Windows
+
+else
+LDLIBS  = -lraylib -ldl -lpthread
+LDFLAGS = -Lexternals/libs-Unix
+
+endif
+
 
 DEPS=$(OBJS:.o=.d)
 
-all: $(PROGRAM)
+.PHONY: all clean
 
-%.o: %.c
-	gcc -c $(CFLAGS) $(CPPFLAGS) -o $@ $<
+all: $(PROGRAM)
 
 -include $(DEPS)
 
+%.o: %.c
+	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -c $< -o $@
+
 $(PROGRAM): $(OBJS)
-	gcc $(CFLAGS) $(CPPFLAGS) -o $@ $(LDFLAGS) $^ $(LDLIBS)
+	$(CXX) $(CXXFLAGS) $(CPPFLAGS) $(LDFLAGS) $^ $(LDLIBS) -o $@
 
 clean:
-	rm -f $(OBJS) $(DEPS) $(PROGRAM)
+	rm -f $(PROGRAM) $(OBJS) $(DEPS) && clear

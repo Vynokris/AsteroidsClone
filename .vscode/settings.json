@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "my_math.h": "c",
+        "game.h": "c"
+    }
+}

@@ -4,23 +4,23 @@
 void ui_init(Ui* ui)
 {
     // Set all of the ui's values.
-    ui->score_size = 200;
-    ui->timer_size = 50;
-    ui->life_size = 40;
+    ui->score_size  = 200;
+    ui->timer_size  = 50;
+    ui->life_size   = 40;
     ui->bullet_size = 2;
 
     // Set all of the game over ui's values.
     ui->game_over_size = 120;
-    ui->info_size = 70;
-    ui->highscore_size = 50;
-    ui->restart_size = 30;
+    ui->info_size      = 70;
+    ui->highscore_size = 35;
+    ui->restart_size   = 40;
 
     // Rhythm scale.
-    ui->beat_scale = 1;
+    ui->beat_scale    = 1;
     ui->offbeat_scale = 1;
 
     // Load the ui's rendertexture.
-    ui->rendertexture = LoadRenderTexture(GetMonitorWidth(0), GetMonitorHeight(0));
+    ui->rendertexture = LoadRenderTexture(SCREEN_WIDTH, SCREEN_HEIGHT);
     SetTextureFilter(ui->rendertexture.texture, TEXTURE_FILTER_BILINEAR);
 }
 
@@ -64,33 +64,22 @@ void ui_render(Game* game)
 
 void main_menu_screen(Game* game)
 {
-    // Get the game's UI.
+    // Get the game's UI and the color of text elements.
     Ui* ui = &game->ui;
+    Color textColor = (get_beat_scale_ms(1.15, 1, 0) >= 1.08 ? BEAT_COLOR : WHITE);
 
     // Draw the title.
-    DrawText("----------",  GetScreenWidth() / 2 - MeasureText("----------",  120) / 2, 340, 120, (ui->beat_scale >= 1.04 || ui->offbeat_scale >= 1.04 ? BEAT_COLOR : WHITE));
-    DrawText("-----------", GetScreenWidth() / 2 - MeasureText("-----------", 120) / 2, 340, 120, (ui->beat_scale >= 1.04 || ui->offbeat_scale >= 1.04 ? BEAT_COLOR : WHITE));
-    DrawText("DUBSPACE",    GetScreenWidth() / 2 - MeasureText("DUBSPACE",    120) / 2, 400, 120, (ui->beat_scale >= 1.04 || ui->offbeat_scale >= 1.04 ? BEAT_COLOR : WHITE));
-    DrawText("-----------", GetScreenWidth() / 2 - MeasureText("-----------", 120) / 2, 460, 120, (ui->beat_scale >= 1.04 || ui->offbeat_scale >= 1.04 ? BEAT_COLOR : WHITE));
-    DrawText("----------",  GetScreenWidth() / 2 - MeasureText("----------",  120) / 2, 460, 120, (ui->beat_scale >= 1.04 || ui->offbeat_scale >= 1.04 ? BEAT_COLOR : WHITE));
+    DrawText("----------",  SCREEN_WIDTH / 2 - MeasureText("----------",  120) / 2, 290, 120, textColor);
+    DrawText("-----------", SCREEN_WIDTH / 2 - MeasureText("-----------", 120) / 2, 290, 120, textColor);
+    DrawText("DUBSPACE",    SCREEN_WIDTH / 2 - MeasureText("DUBSPACE",    120) / 2, 350, 120, textColor);
+    DrawText("-----------", SCREEN_WIDTH / 2 - MeasureText("-----------", 120) / 2, 410, 120, textColor);
+    DrawText("----------",  SCREEN_WIDTH / 2 - MeasureText("----------",  120) / 2, 410, 120, textColor);
 
-    // ----- Draw the keybindings ----- //
-
-    // Start.
-    DrawText("Start Game [space]", GetScreenWidth() / 2 - MeasureText("Start game [space]", 40) / 2, GetScreenHeight() / 2 - 20 - 30, 40, (ui->beat_scale >= 1.04 || ui->offbeat_scale >= 1.04 ? BEAT_COLOR : WHITE));
-
-    // Quit.
-    DrawText("Quit Game [escape]", GetScreenWidth() / 2 - MeasureText("Quit Game [escape]", 40) / 2, GetScreenHeight() / 2 - 20 + 30, 40, (ui->beat_scale >= 1.04 || ui->offbeat_scale >= 1.04 ? BEAT_COLOR : WHITE));
-
-    // Fire.
-    DrawText("Fire [space]", GetScreenWidth() / 2 - MeasureText("Fire [space]", 40) / 2, GetScreenHeight() / 2 + 200, 40, (ui->beat_scale >= 1.04 || ui->offbeat_scale >= 1.04 ? BEAT_COLOR : WHITE));
-
-    // Accelerate.
-    DrawText("Accelerate [up arrow]", GetScreenWidth() / 2 - MeasureText("Accelerate [up arrow]", 40) / 2, GetScreenHeight() / 2 + 250, 40, (ui->beat_scale >= 1.04 || ui->offbeat_scale >= 1.04 ? BEAT_COLOR : WHITE));
-
-    // Turn.
-    DrawText("Turn left [left arrow]", GetScreenWidth() / 2 - MeasureText("Turn left [left arrow]", 40) / 2, GetScreenHeight() / 2 + 300, 40, (ui->beat_scale >= 1.04 || ui->offbeat_scale >= 1.04 ? BEAT_COLOR : WHITE));
-    DrawText("Turn right [right arrow]", GetScreenWidth() / 2 - MeasureText("Turn right [right arrow]", 40) / 2, GetScreenHeight() / 2 + 350, 40, (ui->beat_scale >= 1.04 || ui->offbeat_scale >= 1.04 ? BEAT_COLOR : WHITE));
+    // Draw the keybindings.
+    DrawText("Start Game [space]",                 SCREEN_WIDTH / 2 - MeasureText("Start game [space]",                 ui->restart_size) / 2, SCREEN_HEIGHT / 2 - 50,  ui->restart_size, textColor);
+    DrawText("Quit Game [escape]",                 SCREEN_WIDTH / 2 - MeasureText("Quit Game [escape]",                 ui->restart_size) / 2, SCREEN_HEIGHT / 2 + 10,  ui->restart_size, textColor);
+    DrawText("Move with [WASD]",                   SCREEN_WIDTH / 2 - MeasureText("Move with [WASD]",                   ui->restart_size) / 2, SCREEN_HEIGHT / 2 + 350, ui->restart_size, textColor);
+    DrawText("Shoot with [space] or [left click]", SCREEN_WIDTH / 2 - MeasureText("Shoot with [space] or [left click]", ui->restart_size) / 2, SCREEN_HEIGHT / 2 + 400, ui->restart_size, textColor);
 }
 
 
@@ -104,37 +93,37 @@ void in_game_ui(Game* game)
 
     // Draw the score multiplier.
     DrawText(TextFormat("x%d", get_power_of_two(game->multiplier)), 
-            GetMonitorWidth(0) / 2 - MeasureText(TextFormat("x%d", game->multiplier), ui->timer_size) / 2, 
-            GetMonitorHeight(0) / 2 + text_offset_y, 
-            ui->timer_size, 
-            (Color){ (game->multiplier >= 16 ? RED.r : remap(get_power_of_two(game->multiplier), 1, 8, GREEN.r, YELLOW.r)), 
-                        (game->multiplier >= 16 ? RED.g : remap(get_power_of_two(game->multiplier), 1, 8, GREEN.g, YELLOW.g)),
-                        (game->multiplier >= 16 ? RED.b : remap(get_power_of_two(game->multiplier), 1, 8, GREEN.b, YELLOW.b)),
-                        200 });
+             SCREEN_WIDTH / 2 - MeasureText(TextFormat("x%d", game->multiplier), ui->timer_size) / 2, 
+             SCREEN_HEIGHT / 2 + text_offset_y, 
+             ui->timer_size, 
+             (Color){ (game->multiplier >= 16 ? RED.r : remap(get_power_of_two(game->multiplier), 1, 8, GREEN.r, YELLOW.r)), 
+                      (game->multiplier >= 16 ? RED.g : remap(get_power_of_two(game->multiplier), 1, 8, GREEN.g, YELLOW.g)),
+                      (game->multiplier >= 16 ? RED.b : remap(get_power_of_two(game->multiplier), 1, 8, GREEN.b, YELLOW.b)),
+                      200 });
 
     text_offset_y += ui->timer_size;
 
     // Draw the score.
     DrawText(TextFormat("%d", game->score), 
-            GetMonitorWidth(0) / 2 - MeasureText(TextFormat("%d", game->score), ui->score_size) / 2, 
-            GetMonitorHeight(0) / 2 + text_offset_y, 
-            ui->score_size, 
-            (game->player.scale >= 1.08 ? (Color){ BEAT_COLOR.r - 50, BEAT_COLOR.g - 50, BEAT_COLOR.b - 50, 255 } : GRAY));
+             SCREEN_WIDTH / 2 - MeasureText(TextFormat("%d", game->score), ui->score_size) / 2, 
+             SCREEN_HEIGHT / 2 + text_offset_y, 
+             ui->score_size, 
+             (game->player.scale >= 1.08 ? (Color){ BEAT_COLOR.r - 50, BEAT_COLOR.g - 50, BEAT_COLOR.b - 50, 255 } : GRAY));
 
     text_offset_y += ui->score_size;
 
     // Draw the timer.
     DrawText(TextFormat("%ds", time(NULL) - game->start_time),
-            GetMonitorWidth(0) / 2 - MeasureText(TextFormat("%ds", time(NULL) - game->start_time), ui->timer_size) / 2, 
-            GetMonitorHeight(0) / 2 + text_offset_y, 
+            SCREEN_WIDTH / 2 - MeasureText(TextFormat("%ds", time(NULL) - game->start_time), ui->timer_size) / 2, 
+            SCREEN_HEIGHT / 2 + text_offset_y, 
             ui->timer_size, 
             (game->player.scale >= 1.08 ? (Color){ BEAT_COLOR.r - 50, BEAT_COLOR.g - 50, BEAT_COLOR.b - 50, 255 } : GRAY));
 
     text_offset_y += ui->timer_size * 2.5;
 
     // Draw the lives.
-    Vector2 triangle_offset = { (GetMonitorWidth(0) - ((game->player.hp - 1) * ui->life_size) - ((game->player.hp - 1) * 8)) / 2,
-                                 GetMonitorHeight(0) / 2 + text_offset_y - 15 };
+    Vector2 triangle_offset = { (SCREEN_WIDTH - ((game->player.hp - 1) * ui->life_size) - ((game->player.hp - 1) * 8)) / 2,
+                                 SCREEN_HEIGHT / 2 + text_offset_y - 15 };
 
     for (int i = 0; i < game->player.hp; i++) {
         if (i != game->player.hp - 1 || (!game->player.invulnerable || game->player.scale > 1.06)) {
@@ -160,36 +149,43 @@ void in_game_ui(Game* game)
 
 void game_over_screen(Game* game)
 {
-    // Get the game's UI.
+    // Get the game's UI and the color of text elements.
     Ui* ui = &game->ui;
+    double beatScale = get_beat_scale_ms(1.15, 1, 0);
+    Color textColor  = (beatScale >= 1.08 ? BEAT_COLOR : WHITE);
+    int textPos = 200;
 
     // Draw the game over text.
     DrawText("GAME OVER", 
-             GetMonitorWidth(0) / 2 - MeasureText("GAME OVER", ui->game_over_size) / 2, 
-             400, 
+             SCREEN_WIDTH / 2 - MeasureText("GAME OVER", ui->game_over_size) / 2, 
+             textPos, 
              ui->game_over_size, 
              RED);
+    textPos += 20 + ui->game_over_size;
 
     // Draw the final score.
     DrawText(TextFormat("Score: %d", game->score), 
-             GetMonitorWidth(0) / 2 - MeasureText(TextFormat("Score: %d", game->score), ui->info_size) / 2, 
-             GetMonitorHeight(0) / 2 - ui->game_over_size + 5, 
+             SCREEN_WIDTH  / 2 - MeasureText(TextFormat("Score: %d", game->score), ui->info_size) / 2, 
+             textPos, 
              ui->info_size, 
-             (ui->beat_scale >= 1.04 || ui->offbeat_scale >= 1.04 ? BEAT_COLOR : WHITE));
+             textColor);
+    textPos += 10 + ui->info_size;
 
     // Draw the game duration.
     DrawText(TextFormat("Duration: %ds", game->end_time - game->start_time), 
-             GetMonitorWidth(0) / 2 - MeasureText(TextFormat("Duration: %ds", game->end_time - game->start_time), ui->info_size) / 2, 
-             GetMonitorHeight(0) / 2 - ui->game_over_size + ui->info_size + 10, 
+             SCREEN_WIDTH / 2 - MeasureText(TextFormat("Duration: %ds", game->end_time - game->start_time), ui->info_size) / 2, 
+             textPos, 
              ui->info_size, 
-             (ui->beat_scale >= 1.04 || ui->offbeat_scale >= 1.04 ? BEAT_COLOR : WHITE));
+             textColor);
+    textPos += 10 + ui->info_size + 40;
 
     // Show highscores title.
     DrawText("Highscores:", 
-             GetMonitorWidth(0) / 2 - MeasureText("Highscores:", game->ui.highscore_size) / 2, 
-             GetMonitorHeight(0) / 2 - ui->game_over_size + ui->info_size * 3, 
+             SCREEN_WIDTH / 2 - MeasureText("Highscores:", game->ui.highscore_size) / 2, 
+             textPos, 
              ui->highscore_size, 
-             (ui->beat_scale >= 1.04 || ui->offbeat_scale >= 1.04 ? (Color){ BEAT_COLOR.r - 50, BEAT_COLOR.g - 50, BEAT_COLOR.b - 50, 255 } : GRAY));
+             (beatScale >= 1.08 ? (Color){ BEAT_COLOR.r - 50, BEAT_COLOR.g - 50, BEAT_COLOR.b - 50, 255 } : GRAY));
+    textPos += 10 + ui->highscore_size;
 
     // Get highscores.
     FILE* f = fopen("player_data/highscores.bin", "rb");
@@ -204,21 +200,22 @@ void game_over_screen(Game* game)
         fgets(line_i, 64, f);
 
         DrawText(TextFormat((highscores[i][0] > 0 ? "#%d: %d %ds" : "#%d: -"), i+1, highscores[i][0], highscores[i][1]),
-                GetMonitorWidth(0) / 2 - MeasureText(TextFormat((highscores[i][0] > 0 ? "#%d: %d %ds" : "#%d: -"), i+1, highscores[i][0], highscores[i][1]), ui->highscore_size) / 2,
-                GetMonitorHeight(0) / 2 - ui->game_over_size + ui->info_size * 3 + (ui->highscore_size + 5) * (i+1),
+                SCREEN_WIDTH / 2 - MeasureText(TextFormat((highscores[i][0] > 0 ? "#%d: %d %ds" : "#%d: -"), i+1, highscores[i][0], highscores[i][1]), ui->highscore_size) / 2,
+                textPos,
                 ui->highscore_size,
-                (highscores[i][0] == game->score ? (ui->beat_scale >= 1.04 || ui->offbeat_scale >= 1.04 ? BEAT_COLOR : WHITE) : (ui->beat_scale >= 1.04 || ui->offbeat_scale >= 1.04 ? (Color){ BEAT_COLOR.r - 50, BEAT_COLOR.g - 50, BEAT_COLOR.b - 50, 255 } : GRAY)));
+                (highscores[i][0] == game->score ? textColor : (beatScale >= 1.08 ? (Color){ BEAT_COLOR.r - 50, BEAT_COLOR.g - 50, BEAT_COLOR.b - 50, 255 } : GRAY)));
+        textPos +=  + (ui->highscore_size + 5);
     }
 
     // Draw the restart promt.
     DrawText("Restart [space]", 
-             GetMonitorWidth(0) / 2 - MeasureText("Restart [space]", ui->restart_size) / 2, 
-             GetMonitorHeight(0) - ui->restart_size * 7, 
+             SCREEN_WIDTH / 2 - MeasureText("Restart [space]", ui->restart_size) / 2, 
+             SCREEN_HEIGHT - ui->restart_size * 5, 
              ui->restart_size, 
-             (ui->beat_scale >= 1.04 || ui->offbeat_scale >= 1.04 ? BEAT_COLOR : WHITE));
+             textColor);
     DrawText("Main Menu [escape]", 
-             GetMonitorWidth(0) / 2 - MeasureText("Main Menu [escape]", ui->restart_size) / 2, 
-             GetMonitorHeight(0) - ui->restart_size * 5.5, 
+             SCREEN_WIDTH / 2 - MeasureText("Main Menu [escape]", ui->restart_size) / 2, 
+             SCREEN_HEIGHT - ui->restart_size * 3.5, 
              ui->restart_size, 
-             (ui->beat_scale >= 1.04 || ui->offbeat_scale >= 1.04 ? BEAT_COLOR : WHITE));
+             textColor);
 }

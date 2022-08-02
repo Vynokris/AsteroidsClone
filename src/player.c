@@ -8,7 +8,7 @@ void player_init(Player* player)
     player_invulnerability(player);
     player->rotation = -PI / 2;
     player->scale = 1;
-    player->pos = Vector2Create(GetMonitorWidth(0) / 2, GetMonitorHeight(0) / 2);
+    player->pos = Vector2Create(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2);
     player->velocity = Vector2Zero();
     player_shape_update(player);
     particle_init(player->particles);
@@ -49,51 +49,52 @@ void player_update(Player* player, Bullet* bullets)
     // Get the number of milliseconds since the last beat.
     int time_since_beat = get_time_since_beat();
 
-    // Add velocity if the player is pressing the up arrow.
-    if (IsKeyDown(KEY_UP)) {
-        // If the player isn't at max velocity, increment its velocity according to his rotation.
-        if (sqrt(pow(player->velocity.x, 2) + pow(player->velocity.y, 2)) < PLAYER_MAX_VELOCITY) {
-            player->velocity.x += cos(player->rotation) * PLAYER_SPEED;
-            player->velocity.y += sin(player->rotation) * PLAYER_SPEED;
-        }
-        // If the player is at max velocity, decrement his velocity and increment it according to his rotation.
-        else {
-            player->velocity.x *= sqrt(pow(cos(player->rotation) * PLAYER_SPEED, 2) + pow(sin(player->rotation) * PLAYER_SPEED, 2));
-            player->velocity.y *= sqrt(pow(cos(player->rotation) * PLAYER_SPEED, 2) + pow(sin(player->rotation) * PLAYER_SPEED, 2));
-        }
-
-        // Spawn particles behind him, only if he is visible.
-        if (!player->invulnerable || player->scale > 1.06) {
-            particle_spawn(player->particles, 
-                           Vector2Add(player->pos, Vector2FromAngle(player->rotation + (GetRandomValue(0, 1) ? PI/2 : -PI/2), 
-                                                                    GetRandomValue(0, 10))), 
-                           Vector2FromAngle(degToRad(radToDeg(player->rotation - 180) + GetRandomValue(-90, 90)), 1),
-                           30,
-                           5,
-                           2,
-                           15,
-                           PARTICLE_LINES_FILLED,
-                           (player->scale >= 1.08 ? BEAT_COLOR : (Color){ 200, 200, 200, 255 }));
-        }
-    }
+    // The direction in which the player is accelerating.
+    MyVector2 dir = Vector2Create(0, 0);
 
     // Accelerate with the left joystick.
-    else if (IsGamepadAvailable(0) && (fabs(GetGamepadAxisMovement(0, 0)) > 0.1 ||
-                                       fabs(GetGamepadAxisMovement(0, 1)) > 0.1))
+    if (IsGamepadAvailable(0) && (fabs(GetGamepadAxisMovement(0, 0)) > 0.1 ||
+                                  fabs(GetGamepadAxisMovement(0, 1)) > 0.1))
     {
-        // Get the direction of the joystick.
-        MyVector2 dir = Vector2Create(GetGamepadAxisMovement(0, 0), GetGamepadAxisMovement(0, 1));
+        dir = Vector2Create(GetGamepadAxisMovement(0, 0), GetGamepadAxisMovement(0, 1));
+    }
 
+    // Accelerate with WASD.
+    else
+    {
+        if (IsKeyDown(KEY_W)) dir.y--;
+        if (IsKeyDown(KEY_S)) dir.y++;
+        if (IsKeyDown(KEY_A)) dir.x--;
+        if (IsKeyDown(KEY_D)) dir.x++;
+        if (dir.x != 0 || dir.y != 0) Vector2Normalize(dir);
+    }
+    
+    if (dir.x != 0 || dir.y != 0)
+    {
         // If the player is under the maximum velocity, make him accelerate.
         if (Vector2Length(player->velocity) < PLAYER_MAX_VELOCITY)
-            player->velocity = Vector2Add(                   player->velocity,       Vector2MultiplyVal(Vector2Normalize(dir), 0.6));
+            player->velocity = Vector2Add(player->velocity, Vector2MultiplyVal(Vector2Normalize(dir), 0.6));
 
         // If the player is at maximum velocity, stop accelerating.
         else
             player->velocity = Vector2Add(Vector2MultiplyVal(player->velocity, 0.7), Vector2MultiplyVal(Vector2Normalize(dir), 0.3));
+
+        // Spawn particles behind him, only if he is visible.
+        if (!player->invulnerable || player->scale > 1.06) {
+            particle_spawn(player->particles, 
+                            Vector2Add(player->pos, Vector2FromAngle(player->rotation + (GetRandomValue(0, 1) ? PI/2 : -PI/2), 
+                                                                    GetRandomValue(0, 10))), 
+                            Vector2FromAngle(degToRad(radToDeg(Vector2GetAngle(player->velocity)) - 180 + GetRandomValue(-90, 90)), 1),
+                            30,
+                            5,
+                            2,
+                            15,
+                            PARTICLE_LINES_FILLED,
+                            (player->scale >= 1.08 ? BEAT_COLOR : (Color){ 200, 200, 200, 255 }));
+        }
     }
 
-    // Slow down if the player isn't pressing the up arrow.
+    // Slow down if the player isn't pressing movement keys.
     else {
         if (sqrt(pow(player->velocity.x, 2) + pow(player->velocity.y, 2)) > 0) {
             player->velocity.x *= 0.99;
@@ -101,24 +102,26 @@ void player_update(Player* player, Bullet* bullets)
         }
     }
 
-    // Turn.
-    if (IsKeyDown(KEY_LEFT)) {
-        player->rotation -= PI / 48;
-    }
-    if (IsKeyDown(KEY_RIGHT)) {
-        player->rotation += PI / 48;
+    // Rotate according to the right gamepad joystick.
+    if (IsGamepadAvailable(0))
+    {
+        MyVector2 lookDir = Vector2Create(GetGamepadAxisMovement(0, 2), GetGamepadAxisMovement(0, 3));
+        if (fabs(lookDir.x) > 0.1 || 
+            fabs(lookDir.y) > 0.1)
+        {
+            player->rotation = Vector2GetAngle(Vector2Normalize(lookDir));
+        }
     }
 
-    // Rotate according to the right gamepad joystick.
-    if (IsGamepadAvailable(0) && (fabs(GetGamepadAxisMovement(0, 2)) > 0.1 || 
-                                  fabs(GetGamepadAxisMovement(0, 3)) > 0.1))
+    // Rotate towards the mouse.
+    else 
     {
-        player->rotation = Vector2GetAngle(Vector2Normalize(Vector2Create(GetGamepadAxisMovement(0, 2), GetGamepadAxisMovement(0, 3))));
+        player->rotation = Vector2GetAngle(Vector2FromPoints(player->pos, Vector2Create(ScaledMouseX(), ScaledMouseY())));
     }
 
     // Shoot.
     if (!player->has_shot_this_beat &&
-        (IsKeyPressed(KEY_SPACE) || (IsGamepadAvailable(0) && IsGamepadButtonPressed(0, 12)))) 
+        (IsKeyPressed(KEY_SPACE) || IsMouseButtonPressed(MOUSE_BUTTON_LEFT) || (IsGamepadAvailable(0) && IsGamepadButtonPressed(0, 12)))) 
     {
         player_shoot(player, bullets, MS_PER_BEAT - 10 <= time_since_beat || time_since_beat <= 10);
         player->has_shot_this_beat = true;
@@ -130,15 +133,15 @@ void player_update(Player* player, Bullet* bullets)
 
     // Wrap around the screen.
     if (player->pos.x + 10 < 0) {
-        player->pos.x = GetMonitorWidth(0) + 10;
+        player->pos.x = SCREEN_WIDTH + 10;
     }
-    else if (player->pos.x - 10 > GetMonitorWidth(0)) {
+    else if (player->pos.x - 10 > SCREEN_WIDTH) {
         player->pos.x = 0 - 10;
     }
     if (player->pos.y + 10 < 0) {
-        player->pos.y = GetMonitorHeight(0) + 10;
+        player->pos.y = SCREEN_HEIGHT + 10;
     }
-    else if (player->pos.y - 10 > GetMonitorHeight(0)) {
+    else if (player->pos.y - 10 > SCREEN_HEIGHT) {
         player->pos.y = 0 - 10;
     }
 
@@ -170,8 +173,8 @@ void player_invulnerability(Player* player)
 void player_respawn(Player* player)
 {
     // Put the player in the middle of the screen.
-    player->pos.x = GetMonitorWidth(0) / 2;
-    player->pos.y = GetMonitorHeight(0) / 2;
+    player->pos.x = SCREEN_WIDTH / 2;
+    player->pos.y = SCREEN_HEIGHT / 2;
 
     // Set the player's velocity to 0.
     player->velocity = Vector2Zero();

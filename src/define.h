@@ -4,6 +4,12 @@
 #include <time.h>
 #include <string.h>
 
+#define SCREEN_WIDTH  1920
+#define SCREEN_HEIGHT 1080
+#define SCREEN_SCALE  1
+#define SCALED_SCREEN_WIDTH  (SCREEN_WIDTH * SCREEN_SCALE)
+#define SCALED_SCREEN_HEIGHT (SCREEN_HEIGHT * SCREEN_SCALE)
+
 #define SCREEN_SHAKE_DURATION 15
 
 #define FPS                  60
@@ -11,16 +17,13 @@
 #define MS_PER_BEAT          roundInt(1000 / (MUSIC_BPM / 60))
 #define BEATS_TO_FRAMES(int) (double)FPS / 1000 * MS_PER_BEAT * int
 
-
 #define PLAYER_MAX_VELOCITY 8
 #define PLAYER_SPEED        0.5
 #define BEAT_COLOR          (Color){ 149, 204, 222, 255 }
 
-
 #define BULLET_MAX_AMOUNT 120
 #define BULLET_SPEED      12
 #define BULLET_LIFESPAN   120
-
 
 #define ASTEROID_MAX_AMOUNT 64
 #define ASTEROID_SIZE(type)  (type==0 ? 0    : (type==1 ? 30   : (type==2 ? 60   : 90)))   // A_DESTROYED: 0,   A_SMALL: 30,  A_MEDIUM: 60,  A_LARGE: 90
@@ -59,4 +62,22 @@ static inline long get_time_since_beat()
 
     // Get the time since the last beat. Convert the current time in nanoseconds to milliseconds and take it's modulo by the number of milliseconds in a beat.
     return floorInt(spec.tv_nsec / 1.0e6) % MS_PER_BEAT;
+}
+
+// Returns the position of the mouse scaled to the screen scale.
+static inline float ScaledMouseX()
+{
+    return GetMouseX() / SCREEN_SCALE;
+}
+
+// Returns the position of the mouse scaled to the screen scale.
+static inline float ScaledMouseY()
+{
+    return GetMouseY() / SCREEN_SCALE;
+}
+
+// Returns the position of the mouse scaled to the screen scale.
+static inline Vector2 ScaledMousePosition()
+{
+    return (Vector2){ ScaledMouseX(), ScaledMouseY() };
 }
